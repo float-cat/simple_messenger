@@ -10,7 +10,7 @@ print("""<html>
            </title>
           </head>
           <body>
-          <form name="login" method="POST" action="handler/login.py">
+          <form name="loginform" method="POST" action="handler/login.py">
            <input name="login" type="text">
            </input>
            <input name="password" type="password">

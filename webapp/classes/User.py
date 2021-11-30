@@ -1,4 +1,5 @@
 import pymysql
+import html
 
 # Следующие значения не должны изменяться в процессе работы программы!
 BAD_USER = -1
@@ -11,13 +12,13 @@ class User(object):
         self.condb = condb
 
     def setEmail(self, email):
-        self.email = email
+        self.email = html.escape(email)
 
     def setLogin(self, login):
-        self.login = login
+        self.login = html.escape(login)
 
     def setPassword(self, password):
-        self.password = password
+        self.password = html.escape(password)
 
     def loginUser(self):
         # Проверяем соответствие паролю
