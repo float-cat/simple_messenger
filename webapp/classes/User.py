@@ -50,7 +50,7 @@ class User(object):
 
         row = cur.fetchone()
 
-        # Если есть данные
+        # Если есть данные, то такой пользователь уже есть
         if row != "None":
             # Возвращаем идентификатор BAD_USER
             return BAD_USER
