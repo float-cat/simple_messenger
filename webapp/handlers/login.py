@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
+import pymysql
 import cgi
+import sys
 from http import cookies
 import datetime
 
 sys.path.insert(0, "../classes")
 
-from User import BAD_USER
-from User import User
+import User
+
+condb = pymysql.connect(host='localhost',
+                             user='USER',
+                             password='PASSWORD',                             
+                             db='SimpleMessenger',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor) 
 
 def setCookie(name, value):
     # Создаем куки
@@ -37,7 +45,7 @@ def loginMain():
         if userid != BAD_USER:
             setCookie('login', login)
             setCookie('password', password)
-    else
+    else:
         # Проверяем есть ли форма register
         formType = form.getfirst("register", "None")
         # Если есть
@@ -52,3 +60,5 @@ def loginMain():
             if userid != BAD_USER:
                 setCookie('login', login)
                 setCookie('password', password)
+
+loginMain()

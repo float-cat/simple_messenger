@@ -10,7 +10,7 @@ print("""<html>
            </title>
           </head>
           <body>
-          <form name="loginform" method="POST" action="handler/login.py">
+          <form name="loginform" method="POST" action="handlers/login.py">
            <input name="login" type="text">
            </input>
            <input name="password" type="password">
@@ -18,7 +18,7 @@ print("""<html>
            <input type="submit" value="Войти">
            </input>
           </form>
-          <form name="register" method="POST" action="handler/login.py">
+          <form name="register" method="POST" action="handlers/login.py">
            <input name="login" type="text">
            </input>
            <input name="email" type="text">
