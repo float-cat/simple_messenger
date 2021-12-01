@@ -24,11 +24,11 @@ CREATE TABLE Messages (
     -- Уникальный идентификатор сообщения
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     -- Отправитель сообщения
-    fromUserId INT NOT NULL,
+    fromUserId INT,
     -- Получатель сообщения
-    toUserId INT NOT NULL,
+    toUserId INT,
     -- Сообщение
-    message NVARCHAR(20) UNIQUE NOT NULL,
+    message NVARCHAR(255) UNIQUE NOT NULL,
     -- Время и дата отправления
     sendDate DATE NOT NULL,
     -- Зависимость к первичному ключу пользователя
