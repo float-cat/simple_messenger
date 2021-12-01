@@ -2,7 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import builtins
 
-builtins.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345@localhost/SimpleMessenger'
+# builtins.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://USER:PASSWORD@localhost/SimpleMessenger'
+builtins.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///c:/absolute/path/to/mysql.db'
 db = SQLAlchemy(builtins.app)
 
 # Таблица членов групповых переписок (связь много-ко-многим)
