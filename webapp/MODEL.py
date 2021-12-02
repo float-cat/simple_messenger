@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 db = SQLAlchemy()
@@ -18,7 +19,7 @@ block_users = db.Table('BlockUsers',
 )
 
 # Таблица пользователей мессенджера
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'Users'
     # Идентификатор пользователя
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
@@ -36,7 +37,14 @@ class User(db.Model):
     # DBG blockUsers = db.relationship('User', secondary=block_users, backref='user')
 
     def __repr__(self):
-        return 'Users {} {}'.format(self.login, self.email)
+        return 'Users {} {}'.format
+
+    'Хэшируем пароль + проверка'
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self, password)
 
 # Таблица личных сообщений пользователей
 class Message(db.Model):
