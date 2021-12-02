@@ -130,3 +130,6 @@ dmypy.json
 
 # Windows image db
 *Thumbs.db
+
+# SQL database
+*simple_messenger_database.db
