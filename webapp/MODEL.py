@@ -25,11 +25,15 @@ class User(db.Model):
     email = db.Column(db.String(60), unique=True, nullable=False)
     login = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(32), nullable=False)
-    messages = db.relationship('Message', backref='user')
-    chats = db.relationship('Chat', backref='user')
-    chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
-    chatMessages = db.relationship('ChatMessage', backref='user')
-    blockUsers = db.relationship('User', secondary=block_users, backref='user')
+    messages = db.relationship('Message',
+        primaryjoin='User.id == Message.fromUserId or User.id == Message.toUserId',
+        backref='user')
+    chats = db.relationship('Chat',  primaryjoin='User.id == Chat.ownerUserId',
+        backref='user')
+    # DBG chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
+    chatMessages = db.relationship('ChatMessage', 
+        primaryjoin='User.id == ChatMessage.fromUserId', backref='user')
+    # DBG blockUsers = db.relationship('User', secondary=block_users, backref='user')
 
     def __repr__(self):
         return 'Users {} {}'.format(self.login, self.email)
@@ -55,7 +59,8 @@ class Chat(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     # Создатель групповой переписки
     ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))    
-    chatMessages = db.relationship('ChatMessage', backref='chat')
+    chatMessages = db.relationship('ChatMessage',
+        primaryjoin='Chat.id == ChatMessage.toChatId', backref='chat')
 
 # Таблица сообщений групповых переписок
 class ChatMessage(db.Model):
