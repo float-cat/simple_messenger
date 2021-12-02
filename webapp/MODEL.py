@@ -40,8 +40,8 @@ class User(db.Model, UserMixin):
         return 'Users {} {}'.format
 
     'Хэшируем пароль + проверка'
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
+    def set_password(self, my_password):
+        self.password = generate_password_hash(my_password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
