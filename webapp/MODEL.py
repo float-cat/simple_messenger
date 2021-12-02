@@ -1,10 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import builtins
 
-# builtins.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://USER:PASSWORD@localhost/SimpleMessenger'
-builtins.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///c:/absolute/path/to/mysql.db'
-db = SQLAlchemy(builtins.app)
+
+
+db = SQLAlchemy()
 
 # Таблица членов групповых переписок (связь много-ко-многим)
 chat_users = db.Table('ChatUsers',
@@ -31,6 +30,9 @@ class User(db.Model):
     chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
     chatMessages = db.relationship('ChatMessage', backref='user')
     blockUsers = db.relationship('User', secondary=block_users, backref='user')
+
+    def __repr__(self):
+        return 'Users {} {}'.format(self.login, self.email)
 
 # Таблица личных сообщений пользователей
 class Message(db.Model):
@@ -69,4 +71,4 @@ class ChatMessage(db.Model):
     # Время и дата отправления
     sendDate = db.Column(db.DateTime(), default=datetime.utcnow)
 
-db.create_all()
+
