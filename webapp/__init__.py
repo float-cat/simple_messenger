@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login
 
+
 'Инициализация Flask приложения, config файла и базы данных'
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -43,14 +44,14 @@ def process_login():
     if form.validate_on_submit():
         user = User.query.filter(User.login == form.login.data).first()
         """Если пользователь с логином найден в базе, то 
-         проверяем пароль на валидность. для проверки хэширования после i использовать
-         User.check_password(form.passwod.data)"""
-        if user and User.check_password(form.password.data):
+             проверяем пароль на валидность. для проверки хэширования после i использовать
+             User.check_password(form.passwod.data)"""
+        if user and user.check_password(form.password.data):
             login_user(user)
             flash('Идентификация и авторизация пройдена')
             return redirect(url_for('auth'))
 
     flash('Что-то пошло не так')
     return redirect(url_for('index'))
-if __name__ == "__init__":
-    app.run()
+app.run()
+
