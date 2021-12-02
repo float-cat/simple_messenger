@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{{ page_title }}</title>
+</head>
+
+<body>
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+
+<br />
+<form action="{{  url_for('process_login')  }}" method="post">
+{{ form.hidden_tag()}}
+<p>{{ form.login.label }}<br />{{ form.login() }}</p>
+<p>{{ form.password.label }}<br />{{ form.password() }}</p>
+<p>{{ form.submit() }}</p>
+</form>
+
+</body>
+</html>

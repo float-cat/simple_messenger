@@ -23,7 +23,8 @@ with app.app_context():
     password = input('Введите пароль')
 
     'Создаем нового пользователя в User'
-    new_user = User(login=login, email=email, password=password)
+    new_user = User(login=login, email=email)
+    new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
     print('Пользователь id {} создан и добавлен в базу данных'.format(new_user.id))
