@@ -48,7 +48,7 @@ class Message(db.Model):
     # Получатель сообщения
     toUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))
     # Сообщение
-    message = db.Column(db.Text(), unique=True, nullable=False)
+    message = db.Column(db.Text(), nullable=False)
     # Время и дата отправки
     sendDate = db.Column(db.DateTime(), default=datetime.utcnow)
 
@@ -72,7 +72,7 @@ class ChatMessage(db.Model):
     # Идентификатор групповой переписки
     toChatId = db.Column(db.Integer(), db.ForeignKey('Chats.id'))
     # Сообщение
-    message = db.Column(db.Text(), unique=True, nullable=False)
+    message = db.Column(db.Text(), nullable=False)
     # Время и дата отправления
     sendDate = db.Column(db.DateTime(), default=datetime.utcnow)
 
