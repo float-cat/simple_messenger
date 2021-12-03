@@ -128,8 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Windows image db
-*Thumbs.db
-
-# SQL database
-*simple_messenger_database.db
+# databases
+.db
