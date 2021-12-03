@@ -3,7 +3,8 @@ from flask_login import LoginManager, login_user
 
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login
-from webapp.classes.Messages import Messages
+from webapp.modules.MessagesDiv import MessagesDiv
+from webapp.handlers.MessagesHandler import MessagesHandler
 
 
 def create_app():
@@ -29,11 +30,16 @@ def create_app():
         return render_template('index.html', page_title=title)
 
 
-    @app.route('/test/')
-    def test():
-        msg = Messages(db, '1')
-        msg.sendMessage('2', 'test !-_-!')
-        return 'Test ok!';
+    # Тестовая страница для отправки и получения сообщений
+    @app.route('/messages')
+    def messages():
+        return MessagesDiv()
+
+
+    # Служебная страница обработчик формы сообщений по AJAX
+    @app.route('/messagesproc', methods=['POST'])
+    def process_messages():
+        return MessagesHandler(db)
 
 
     'Страница авторизации'
@@ -53,7 +59,8 @@ def create_app():
         if form.validate_on_submit():
             user = User.query.filter(User.login == form.login.data).first()
             """Если пользователь с логином найден в базе, то 
-                 проверяем пароль на валидность. для проверки хэширования после i использовать
+                 проверяем пароль на валидность.
+                 для проверки хэширования после i использовать
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
                 login_user(user)

@@ -11,17 +11,41 @@ class Messages(object):
     def __init__(self, db, fromUserId):
         self.db = db
         self.fromUserId = html.escape(fromUserId)
-
-    def sendMessage(self, toUserId, message):        
-        self.toUserId = html.escape(toUserId)        
-        self.message = html.escape(message)
         engine = self.db.engine
         Session = scoped_session(sessionmaker(bind=engine))
+        self.session = Session()
 
-        s = Session()
+    def sendMessage(self, toUserId, message):
+        self.toUserId = html.escape(toUserId)        
+        self.message = html.escape(message)
         today = datetime.datetime.now()
-        s.execute(f"INSERT INTO Messages \
-            (fromUserId, toUserId, message, sendDate) \
-            VALUES ({self.fromUserId}, \
-            {self.toUserId}, '{self.message}', '{today}')")
-        s.commit()
+        self.session.execute(
+            f"""INSERT INTO Messages
+                  (fromUserId, toUserId, message, sendDate)
+                VALUES ({self.fromUserId},
+                  {self.toUserId}, '{self.message}', '{today}')""")
+        self.session.commit()
+
+    def getMessagesDelta(self, lastId, userId):
+        textplain = ""        
+        lastId = html.escape(lastId)
+        userId = html.escape(userId)
+        result = self.session.execute(
+            f"""SELECT Messages.id, login, message
+                FROM Users
+                INNER JOIN Messages
+                WHERE Messages.id > {lastId}
+                  AND Users.id == Messages.fromUserId
+                  AND (
+                    Messages.fromUserId = {self.fromUserId}
+                    OR Messages.toUserId = {self.fromUserId}
+                  )
+                  AND (
+                    Messages.fromUserId = {userId}
+                    OR Messages.toUserId = {userId}
+                  )""")
+        for row in result:
+            textplain += f"""{row[1]}: {row[2]}\n"""
+            lastId = str(row[0])
+        textplain = lastId + "|" + textplain
+        return textplain
