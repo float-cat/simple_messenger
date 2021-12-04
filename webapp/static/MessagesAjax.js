@@ -9,7 +9,7 @@ msg = {
 
         /* Заполняем данные формы */
         form.typeRequest.value = 'send';
-        /* Прячем сообщение, чтобы избежать паузы */        
+        /* Прячем сообщение, чтобы избежать паузы */
         form.newMessageTmp.value = form.newMessage.value;
         /* Сбрасываем поле сообщения */
         form.newMessage.value = '';
@@ -34,8 +34,8 @@ msg = {
         let formData = new FormData(form);
 
         /* Добавляем данные для аутентификации */
-        formData.append('login', 'Test');
-        formData.append('password', '1234');
+        formData.append('login', 'Test'); // DBG
+        formData.append('password', '1234'); // DBG
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -57,8 +57,6 @@ msg = {
         let messages = result.slice(sepPos+1);
 
         /* Добавляем сообщения в переписку */
-        form.messages.value += messages;
+        document.forms['receiveForm'].messages.value += messages;
     }
 };
-
-setInterval(() => msg.update(document.forms['receiveForm'], '2'), 2000);
