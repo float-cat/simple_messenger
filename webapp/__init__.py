@@ -1,8 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, flash
-from flask_login import LoginManager, login_user
-
+from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login
+
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
 
@@ -29,11 +29,15 @@ def create_app():
         title = 'SimpleMessenger - главная страница'
         return render_template('index.html', page_title=title)
 
-
     # Тестовая страница для отправки и получения сообщений
     @app.route('/messages')
     def messages():
-        return MessagesDiv()
+        if current_user.authenticating():
+            return MessagesDiv()
+        else:
+            flash('Авторизуйтесь пожалуйста')
+            return redirect(url_for('auth'))
+
 
 
     # Служебная страница обработчик формы сообщений по AJAX
@@ -47,7 +51,11 @@ def create_app():
     def auth():
         title = "Авторизация"
         auth_forms = simple_messenger_login()
-        return render_template('auth.html', page_title=title, form=auth_forms)
+        if current_user.authenticating():
+            flash('Вы уже авторизованы')
+            return redirect(url_for('index'))
+        else:
+            return render_template('auth.html', page_title=title, form=auth_forms)
 
 
     'обработчик формы авторизации'
@@ -59,8 +67,7 @@ def create_app():
         if form.validate_on_submit():
             user = User.query.filter(User.login == form.login.data).first()
             """Если пользователь с логином найден в базе, то 
-                 проверяем пароль на валидность.
-                 для проверки хэширования после i использовать
+                 проверяем пароль на валидность. для проверки хэширования после i использовать
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
                 login_user(user)
@@ -68,6 +75,13 @@ def create_app():
                 return redirect(url_for('auth'))
 
         flash('Что-то пошло не так')
+        return redirect(url_for('index'))
+
+    'Очистить куки, завершить сессию'
+    @app.route("/logout")
+    def logout():
+        logout_user()
+        flash('Вы успешно разлогинились')
         return redirect(url_for('index'))
 
     return app
