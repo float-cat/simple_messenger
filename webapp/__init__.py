@@ -32,7 +32,7 @@ def create_app():
     # Тестовая страница для отправки и получения сообщений
     @app.route('/messages')
     def messages():
-        if current_user.authenticating():
+        if current_user.is_authenticated:
             return MessagesDiv()
         else:
             flash('Авторизуйтесь пожалуйста')
@@ -51,7 +51,7 @@ def create_app():
     def auth():
         title = "Авторизация"
         auth_forms = simple_messenger_login()
-        if current_user.authenticating():
+        if current_user.is_authenticated:
             flash('Вы уже авторизованы')
             return redirect(url_for('index'))
         else:
@@ -72,7 +72,7 @@ def create_app():
             if user and user.check_password(form.password.data):
                 login_user(user)
                 flash('Идентификация и авторизация пройдена')
-                return redirect(url_for('auth'))
+                return redirect(url_for('index'))
 
         flash('Что-то пошло не так')
         return redirect(url_for('index'))
