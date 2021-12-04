@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+
+# databases
+*.db
+
 # Distribution / packaging
 .Python
 build/
@@ -127,6 +131,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# databases
-.db
