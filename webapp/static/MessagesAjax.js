@@ -1,5 +1,16 @@
 msg = {
     lastId: 0,
+    async setAllPM(result)
+    {
+        let test = ''
+        for(let idx = 0; idx < result['count']; idx++)
+        {
+            test += result[result['msgids'][idx]]['login']
+                + ': ' + result[result['msgids'][idx]]['message'] + '\n';
+        }
+        alert(test);
+    },
+
     /* Метод, отправляющий сообщение */
     async send(form, toUserId)
     {
@@ -29,7 +40,7 @@ msg = {
     async update(form, toUserId)
     {
         /* Заполняем данные формы */
-        form.typeRequest.value = 'update';        
+        form.typeRequest.value = 'update';
         form.lastId.value = msg.lastId.toString();
         let formData = new FormData(form);
 
@@ -58,5 +69,28 @@ msg = {
 
         /* Добавляем сообщения в переписку */
         document.forms['receiveForm'].messages.value += messages;
+    },
+
+    /* Метод, обновляющий статус переписок */
+    async updateAllPM(form)
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData(form);
+
+        /* Добавляем данные для аутентификации */
+        formData.append('login', userInfo.login);
+        formData.append('password', userInfo.password);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        msg.setAllPM(result);
     }
 };
