@@ -34,8 +34,8 @@ msg = {
         let formData = new FormData(form);
 
         /* Добавляем данные для аутентификации */
-        formData.append('login', 'Test'); // DBG
-        formData.append('password', '1234'); // DBG
+        formData.append('login', userInfo.login);
+        formData.append('password', userInfo.password);
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, make_response
 from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login
@@ -61,21 +61,31 @@ def create_app():
     'обработчик формы авторизации'
     @app.route('/authproc', methods=['POST'])
     def process_login():
+        res = redirect(url_for('index'))
         form = simple_messenger_login()
-
         'Если форма заполнена правильно, то обращаемся к базе данных'
         if form.validate_on_submit():
             user = User.query.filter(User.login == form.login.data).first()
             """Если пользователь с логином найден в базе, то 
-                 проверяем пароль на валидность. для проверки хэширования после i использовать
+                 проверяем пароль на валидность.
+                 для проверки хэширования после i использовать
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
                 login_user(user)
+                # Устанавливаем куки на сроком на 15 дней
+                if not request.cookies.get("login") \
+                    or not request.cookies.get("password"):
+                    # Создаем объект работающий с куками
+                    res = make_response("Setting a cookie")
+                    res.set_cookie("login", form.login.data,
+                        max_age=60*60*24*15)
+                    res.set_cookie("password", form.password.data,
+                        max_age=60*60*24*15)
                 flash('Идентификация и авторизация пройдена')
-                return redirect(url_for('index'))
+                return res
 
         flash('Что-то пошло не так')
-        return redirect(url_for('index'))
+        return res# redirect(url_for('index'))
 
     'Очистить куки, завершить сессию'
     @app.route("/logout")
