@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect, url_for, flash
-from flask_login import LoginManager, login_user
-
+from flask import Flask, request, render_template, redirect, url_for, flash, make_response
+from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login
+
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
 
@@ -29,11 +29,15 @@ def create_app():
         title = 'SimpleMessenger - главная страница'
         return render_template('index.html', page_title=title)
 
-
     # Тестовая страница для отправки и получения сообщений
     @app.route('/messages')
     def messages():
-        return MessagesDiv()
+        if current_user.is_authenticated:
+            return MessagesDiv()
+        else:
+            flash('Авторизуйтесь пожалуйста')
+            return redirect(url_for('auth'))
+
 
 
     # Служебная страница обработчик формы сообщений по AJAX
@@ -47,14 +51,18 @@ def create_app():
     def auth():
         title = "Авторизация"
         auth_forms = simple_messenger_login()
-        return render_template('auth.html', page_title=title, form=auth_forms)
+        if current_user.is_authenticated:
+            flash('Вы уже авторизованы')
+            return redirect(url_for('index'))
+        else:
+            return render_template('auth.html', page_title=title, form=auth_forms)
 
 
     'обработчик формы авторизации'
     @app.route('/authproc', methods=['POST'])
     def process_login():
+        res = redirect(url_for('index'))
         form = simple_messenger_login()
-
         'Если форма заполнена правильно, то обращаемся к базе данных'
         if form.validate_on_submit():
             user = User.query.filter(User.login == form.login.data).first()
@@ -64,10 +72,26 @@ def create_app():
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
                 login_user(user)
+                # Устанавливаем куки на сроком на 15 дней
+                if not request.cookies.get("login") \
+                    or not request.cookies.get("password"):
+                    # Создаем объект работающий с куками
+                    res = make_response("Setting a cookie")
+                    res.set_cookie("login", form.login.data,
+                        max_age=60*60*24*15)
+                    res.set_cookie("password", form.password.data,
+                        max_age=60*60*24*15)
                 flash('Идентификация и авторизация пройдена')
-                return redirect(url_for('auth'))
+                return res
 
         flash('Что-то пошло не так')
+        return res# redirect(url_for('index'))
+
+    'Очистить куки, завершить сессию'
+    @app.route("/logout")
+    def logout():
+        logout_user()
+        flash('Вы успешно разлогинились')
         return redirect(url_for('index'))
 
     return app
