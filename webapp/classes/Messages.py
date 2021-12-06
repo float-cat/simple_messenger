@@ -78,6 +78,23 @@ class Messages(object):
                         FROM Messages
                         GROUP BY toUserId
                     )""")
+        # Объявляем словарь для формирования ответа
+        #  Структура ответа
+        #    {
+        #        "count": <count>,
+        #        "msgids":
+        #        {
+        #            "0": <id1>
+        #            ...
+        #        }
+        #        "id1":
+        #        {
+        #            "login": <login1>,
+        #            "messageid": <messageid1>,
+        #            "message": <message1>
+        #        }
+        #        ...
+        #    }
         resultDict = {}
         resultDict['count'] = 0
         resultDict['msgids'] = {}
@@ -92,7 +109,7 @@ class Messages(object):
                 # Запоминаем в словарь
                 resultDict[row[0]] = {}
                 resultDict[row[0]]['login'] = row[1]
-                resultDict[row[0]]['messageid'] = int(row[2])
+                resultDict[row[0]]['messageid'] = int(row[2])                
                 resultDict[row[0]]['message'] = row[3]
         jsonString = json.dumps(resultDict)
         return jsonString

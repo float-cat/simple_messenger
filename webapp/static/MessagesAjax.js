@@ -1,14 +1,34 @@
 msg = {
     lastId: 0,
+
+    /* Метод обновляет или добавляет новую переписку */
+    async setPMInfo(idx, login, message)
+    {
+        output = document.getElementById('messagesAllOutput');
+        /* Проверяем есть ли такая переписка */
+        let newDiv = document.getElementById('user' + idx);
+        if(newDiv === null)
+        {
+            /* Если нет, то создаем новую */
+            newDiv = document.createElement('div');
+            newDiv.id = 'user' + idx;
+            output.append(newDiv);
+        }
+        /* Обновляем сообщение */
+        newDiv.innerHTML = '<b><a href="messages?userid='
+            + idx + '">' + login + ':</a></b> ' + message;
+    },
+
     async setAllPM(result)
     {
-        let test = ''
         for(let idx = 0; idx < result['count']; idx++)
         {
-            test += result[result['msgids'][idx]]['login']
-                + ': ' + result[result['msgids'][idx]]['message'] + '\n';
+            msg.setPMInfo(
+                result['msgids'][idx],
+                result[result['msgids'][idx]]['login'],
+                result[result['msgids'][idx]]['message']
+            );
         }
-        alert(test);
     },
 
     /* Метод, отправляющий сообщение */
