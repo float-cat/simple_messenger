@@ -9,9 +9,8 @@ def MessagesDiv():
               """
     if toUserId:
         res += f"""<div>
-                    <form name="receiveForm" method="POST" action="/messagesproc">
-                     <textarea name="messages"></textarea>
-                    </form>
+                    <div id="receiveDiv">
+                    </div>
                     <br />
                     <form name="sendForm" method="POST" action="/messagesproc">
                      <input name="typeRequest" style="display: none;">
