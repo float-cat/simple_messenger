@@ -82,7 +82,7 @@ class Messages(object):
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, Messages.id,
-                    message
+                    message, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = fromUserId
@@ -94,7 +94,7 @@ class Messages(object):
                     )
                 UNION
                 SELECT toUserId, login, Messages.id,
-                    message
+                    message, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = toUserId
@@ -135,7 +135,10 @@ class Messages(object):
                 # Запоминаем в словарь
                 resultDict[row[0]] = {}
                 resultDict[row[0]]['login'] = row[1]
-                resultDict[row[0]]['messageid'] = int(row[2])                
-                resultDict[row[0]]['message'] = row[3]
+                resultDict[row[0]]['messageid'] = int(row[2])
+                if self.fromUserId == str(row[4]):
+                    resultDict[row[0]]['message'] = 'Вы:' + row[3]
+                else:
+                    resultDict[row[0]]['message'] = row[3]
         jsonString = json.dumps(resultDict)
         return jsonString
