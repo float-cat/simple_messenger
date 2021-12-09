@@ -1,7 +1,6 @@
 from flask import request
-from flask_login import LoginManager, current_user
+from flask_login import current_user
 
-from webapp.classes.User import User, BAD_USER
 from webapp.classes.Messages import Messages
 
 def MessagesHandler(db):
