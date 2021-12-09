@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, make_response
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
 from webapp.FORMS import simple_messenger_login, simple_messenger_reg
@@ -99,7 +99,6 @@ def create_app():
     'обработчик формы авторизации'
     @app.route('/authproc', methods=['POST', 'GET'])
     def process_login():
-        res = redirect(url_for('index'))
         form = simple_messenger_login()
         'Если форма заполнена правильно, то обращаемся к базе данных'
         if form.validate_on_submit():
@@ -110,17 +109,8 @@ def create_app():
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
                 login_user(user, remember=form.checkbox.data)
-                # Устанавливаем куки на сроком на 15 дней
-                if not request.cookies.get("login") \
-                    or not request.cookies.get("password"):
-                    # Создаем объект работающий с куками
-                    res = make_response("Setting a cookie")
-                    res.set_cookie("login", form.login.data,
-                        max_age=timedelta(days=15))
-                    res.set_cookie("password", form.password.data,
-                        max_age=timedelta(days=15))
                 flash('Идентификация и авторизация пройдена')
-                return res
+                return redirect(url_for('index'))
 
         flash('Что-то пошло не так')
         return redirect(url_for('auth'))

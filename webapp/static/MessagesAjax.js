@@ -45,9 +45,6 @@ msg = {
         /* Сбрасываем поле сообщения */
         form.newMessage.value = '';
         let formData = new FormData(form);
-        /* Добавляем данные для аутентификации */
-        formData.append('login', 'Test');
-        formData.append('password', '1234');
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -63,10 +60,6 @@ msg = {
         form.typeRequest.value = 'update';
         form.lastId.value = msg.lastId.toString();
         let formData = new FormData(form);
-
-        /* Добавляем данные для аутентификации */
-        formData.append('login', userInfo.login);
-        formData.append('password', userInfo.password);
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -96,10 +89,6 @@ msg = {
     {
         /* Заполняем данные формы */
         let formData = new FormData(form);
-
-        /* Добавляем данные для аутентификации */
-        formData.append('login', userInfo.login);
-        formData.append('password', userInfo.password);
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
