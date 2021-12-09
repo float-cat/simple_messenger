@@ -90,6 +90,7 @@ class Messages(object):
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
+                        WHERE toUserId = {self.fromUserId}
                         GROUP BY fromUserId
                     )
                 UNION
@@ -102,6 +103,7 @@ class Messages(object):
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
+                        WHERE fromUserId = {self.fromUserId}
                         GROUP BY toUserId
                     )""")
         # Объявляем словарь для формирования ответа
