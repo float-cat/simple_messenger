@@ -4,20 +4,13 @@ def MessagesDiv():
     toUserId = request.args.get('userid')
     if request.cookies.get("login") \
         and request.cookies.get("password"):
-        res = """<script type="text/javascript">
-                  userInfo = {
-                      login: '""" + request.cookies.get("login") + """',
-                      password: '""" + request.cookies.get("password") + """'
-                  }
-                 </script>
-                 <script type="text/javascript" src="/static/MessagesAjax.js">
+        res = """<script type="text/javascript" src="/static/MessagesAjax.js">
                  </script>
               """
     if toUserId:
         res += f"""<div>
-                    <form name="receiveForm" method="POST" action="/messagesproc">
-                     <textarea name="messages"></textarea>
-                    </form>
+                    <div id="receiveDiv">
+                    </div>
                     <br />
                     <form name="sendForm" method="POST" action="/messagesproc">
                      <input name="typeRequest" style="display: none;">

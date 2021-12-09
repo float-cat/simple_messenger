@@ -45,18 +45,44 @@ class Messages(object):
                     Messages.fromUserId = {userId}
                     OR Messages.toUserId = {userId}
                   )""")
+        # Объявляем словарь для формирования ответа
+        #  Структура ответа
+        #    {
+        #        "lastid": <lastid>,
+        #        "count": <count>,
+        #        "msgids":
+        #        {
+        #            "0": <id1>
+        #            ...
+        #        }
+        #        "id1":
+        #        {
+        #            "login": <login1>,
+        #            "message": <message1>
+        #        }
+        #        ...
+        #    }
+        resultDict = {}
+        resultDict['lastid'] = 0
+        resultDict['count'] = 0
+        resultDict['msgids'] = {}
         for row in result:
-            textplain += f"""{row[1]}: {row[2]}\n"""
+            resultDict['msgids'][resultDict['count']] = int(row[0])
+            resultDict['count'] += 1
+            resultDict[row[0]] = {}
+            resultDict[row[0]]['login'] = row[1]
+            resultDict[row[0]]['message'] = row[2]
             lastId = str(row[0])
-        textplain = lastId + "|" + textplain
-        return textplain
+        resultDict['lastid'] = lastId
+        jsonString = json.dumps(resultDict)
+        return jsonString
 
     def getAllPMInfo(self):
         jsonString = ""
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, Messages.id,
-                    message
+                    message, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = fromUserId
@@ -68,7 +94,7 @@ class Messages(object):
                     )
                 UNION
                 SELECT toUserId, login, Messages.id,
-                    message
+                    message, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = toUserId
@@ -109,7 +135,10 @@ class Messages(object):
                 # Запоминаем в словарь
                 resultDict[row[0]] = {}
                 resultDict[row[0]]['login'] = row[1]
-                resultDict[row[0]]['messageid'] = int(row[2])                
-                resultDict[row[0]]['message'] = row[3]
+                resultDict[row[0]]['messageid'] = int(row[2])
+                if self.fromUserId == str(row[4]):
+                    resultDict[row[0]]['message'] = 'Вы:' + row[3]
+                else:
+                    resultDict[row[0]]['message'] = row[3]
         jsonString = json.dumps(resultDict)
         return jsonString

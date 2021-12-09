@@ -1,7 +1,8 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, make_response
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
-from webapp.FORMS import simple_messenger_login
+from webapp.FORMS import simple_messenger_login, simple_messenger_reg
+from datetime import timedelta
 
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
@@ -57,11 +58,47 @@ def create_app():
         else:
             return render_template('auth.html', page_title=title, form=auth_forms)
 
+    'Страница регистрации'
+
+    @app.route('/register')
+    def register():
+        title = "Регистрация"
+        auth_forms = simple_messenger_reg()
+        if current_user.is_authenticated:
+            flash('Вы уже зарегистрированы')
+            return redirect(url_for('index'))
+        else:
+            return render_template('reg_user.html', page_title=title, form=auth_forms)
+
+    'Обработчик форм регистрации'
+
+    @app.route('/registerproc', methods=['POST', 'GET'])
+    def process_register():
+        res = redirect(url_for('index'))
+        form = simple_messenger_reg()
+        if form.validate_on_submit():
+            if User.query.filter(User.login == form.login.data).count():
+                flash('Пользователь с таким логином уже существует')
+                return redirect(url_for('register'))
+            if User.query.filter(User.email == form.email.data).count():
+                flash('Этот емаил уже зарегистрирован')
+                return redirect(url_for('register'))
+            new_user = User(login=form.login.data, email=form.email.data)
+            new_user.set_password(form.password.data)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Успешная регистрация. Теперь вы можете авторизоваться.')
+            return res
+        else:
+            flash('Заполните все поля корректно')
+            return redirect(url_for('register'))
+
+
+
 
     'обработчик формы авторизации'
-    @app.route('/authproc', methods=['POST'])
+    @app.route('/authproc', methods=['POST', 'GET'])
     def process_login():
-        res = redirect(url_for('index'))
         form = simple_messenger_login()
         'Если форма заполнена правильно, то обращаемся к базе данных'
         if form.validate_on_submit():
@@ -71,21 +108,12 @@ def create_app():
                  для проверки хэширования после i использовать
                  User.check_password(form.passwod.data)"""
             if user and user.check_password(form.password.data):
-                login_user(user)
-                # Устанавливаем куки на сроком на 15 дней
-                if not request.cookies.get("login") \
-                    or not request.cookies.get("password"):
-                    # Создаем объект работающий с куками
-                    res = make_response("Setting a cookie")
-                    res.set_cookie("login", form.login.data,
-                        max_age=60*60*24*15)
-                    res.set_cookie("password", form.password.data,
-                        max_age=60*60*24*15)
+                login_user(user, remember=form.checkbox.data)
                 flash('Идентификация и авторизация пройдена')
-                return res
+                return redirect(url_for('index'))
 
         flash('Что-то пошло не так')
-        return res# redirect(url_for('index'))
+        return redirect(url_for('auth'))
 
     'Очистить куки, завершить сессию'
     @app.route("/logout")

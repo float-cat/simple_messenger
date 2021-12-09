@@ -1,4 +1,4 @@
-{% extends "base.html" %}  
+﻿{% extends "base.html" %}  
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary ">
   <div class="container-fluid top">
@@ -10,7 +10,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 clearfix">
         <li class="nav-item">
           <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
         </li>
@@ -40,7 +40,7 @@
    {% if messages %}
       {% for message in messages %}
 	  <div class="row  justify-content-center">
-	  <div class="alert alert-success col-11 col-sm-11 col-md-8 col-lg-5 rounded auth" role="alert">
+	  <div class="alert alert-danger col-11 col-sm-11 col-md-8 col-lg-5 rounded auth" role="alert">
 	  {{ message }}
 	  </div>
   
@@ -49,19 +49,31 @@
       {% endfor %}
    {% endif %}
 {% endwith %}
-<div class="container-fluid  auth">
- <div class="jumbotron border border-dark rounded-0">
-  <h1 class="display-4">Привет!</h1>
-  <p class="lead">Добро пожаловать в Simple Messenger </p>
-  <hr class="my-4">
-  <p>На текущий момент функционал нашего приложения включает в себя:</p>
-  <ul>
-  <li>Личные переписки;</li>
-  <li>Групповые переписки;</li>
-  <li>Еще пункт;</li>
-  <li>и еще один.</li>
-  </ul><br>
-  <a class="btn btn-primary btn-lg" href="#" role="button">Узнать больше</a>
-</div>
-</div>
+ <div class="container-fluid">
+	<div class="row  justify-content-center">
+    <div class="col-11 col-sm-11 col-md-8 col-lg-5 bg-white shadow p-3 mb-5 bg-white rounded auth">
+  <form action="{{ url_for("process_register") }}" method="post">
+  {{ form.hidden_tag()}}
+  <div class="mb-3">
+  	
+    {{ form.login.label(class_="form-label") }}
+    {{ form.login() }}
+  </div>
+   <div class="mb-3">
+    {{ form.email.label(class_="form-label") }}
+    {{ form.email() }}
+  </div>
+  <div class="mb-3">
+    {{ form.password.label(class_="form-label") }}
+    {{ form.password() }}
+  </div>
+  {{ form.submit() }}
+</form>
+    </div>
+	</div>
+  </div>
 {% endblock %}
+
+
+
+

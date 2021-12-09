@@ -1,4 +1,5 @@
 from flask import request
+from flask_login import LoginManager, current_user
 
 from webapp.classes.User import User, BAD_USER
 from webapp.classes.Messages import Messages
@@ -9,11 +10,10 @@ def MessagesHandler(db):
     login = request.form.get('login')
     password = request.form.get('password')
     toUserId = request.form.get('toUserId')
-    # Выполняем аутентификацию пользователя
-    user = User(db, login, password)
-    fromUserId = user.loginUser()
-    if fromUserId == BAD_USER:
+    # Проверяем аутентификацию пользователя
+    if not current_user.is_authenticated:
         return 'Auth Fail!'
+    fromUserId = current_user.id
     # Создаем объект для работы с сообщениями
     msg = Messages(db, str(fromUserId))
     # Отправка сообщения
