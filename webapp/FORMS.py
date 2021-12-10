@@ -16,3 +16,8 @@ class simple_messenger_reg(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()], render_kw={"class": "form-control"})
     submit = SubmitField('Зарегистрироваться', render_kw={"class": "btn btn-primary"})
 
+class simple_messenger_messages(FlaskForm):
+    newMessage = StringField('Сообщение', validators=[DataRequired()], render_kw={"class": "form-control", "placeholder": "Введите сообщение"})
+    submit = SubmitField('Отправить', render_kw={"class": "btn btn-primary"})
+    exit = SubmitField('Выход', render_kw={"class": "btn btn-light", "placeholder": "Введите сообщение"})
+
