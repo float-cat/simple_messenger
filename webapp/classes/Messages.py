@@ -1,9 +1,7 @@
 import html
-import sqlalchemy
 import json
 
 from sqlalchemy.orm import sessionmaker, scoped_session
-from webapp.MODEL import db
 import datetime
 
 class Messages(object):
