@@ -6,8 +6,6 @@ from webapp.classes.Messages import Messages
 def MessagesHandler(db):
     # Получаем данные формы
     typeRequest = request.form.get('typeRequest')
-    login = request.form.get('login')
-    password = request.form.get('password')
     toUserId = request.form.get('toUserId')
     # Проверяем аутентификацию пользователя
     if not current_user.is_authenticated:

@@ -36,7 +36,18 @@ def MessagesDiv():
                    </div>
                 """
     else:
-        res += """<div id="messagesAll">
+        res += """<script type="text/javascript" src="/static/SearchUsersAjax.js">
+                  </script>
+                  <form name="searchUsersForm">
+                   <div id="outputUsers">
+                   </div>
+                   <input name="userLogin">
+                   </input>
+                   <input type="button" value="Поиск"
+                    onclick="searchUsers.search(this.form)">
+                   </input>
+                  </form>
+                  <div id="messagesAll">
                    <div id="messagesAllOutput">
                    </div>
                    <form name="allPMInfo">

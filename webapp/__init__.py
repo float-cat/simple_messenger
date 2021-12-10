@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
+from webapp.handlers.SearchUsersHandler import SearchUsersHandler
 
 
 def create_app():
@@ -45,6 +46,12 @@ def create_app():
     @app.route('/messagesproc', methods=['POST'])
     def process_messages():
         return MessagesHandler(db)
+
+    
+    # Служебная страница обработчик формы поиска пользователей по AJAX
+    @app.route('/searchusersproc', methods=['POST'])
+    def process_search():
+        return SearchUsersHandler(db)
 
 
     'Страница авторизации'

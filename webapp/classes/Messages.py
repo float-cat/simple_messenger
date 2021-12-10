@@ -28,7 +28,6 @@ class Messages(object):
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
-        textplain = ""   
         lastId = html.escape(lastId)
         userId = html.escape(userId)
         result = self.session.execute(
@@ -54,7 +53,7 @@ class Messages(object):
         #        {
         #            "0": <id1>
         #            ...
-        #        }
+        #        },
         #        "id1":
         #        {
         #            "login": <login1>,
@@ -78,7 +77,6 @@ class Messages(object):
         return jsonString
 
     def getAllPMInfo(self):
-        jsonString = ""
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, Messages.id,
@@ -114,7 +112,7 @@ class Messages(object):
         #        {
         #            "0": <id1>
         #            ...
-        #        }
+        #        },
         #        "id1":
         #        {
         #            "login": <login1>,
