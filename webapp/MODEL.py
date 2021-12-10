@@ -7,13 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 # Таблица членов групповых переписок (связь много-ко-многим)
-chat_users = db.Table('ChatUsers', db.metadata,
+chat_users = db.Table('ChatUsers',
     db.Column('chatId', db.Integer, db.ForeignKey('Chats.id')),
     db.Column('userId', db.Integer, db.ForeignKey('Users.id'))
 )
 
 # Таблица банов пользователей (связь много-ко-многим)
-block_users = db.Table('BlockUsers', db.metadata,
+block_users = db.Table('BlockUsers',
     db.Column('userId', db.Integer, db.ForeignKey('Users.id')),
     db.Column('blockUserId', db.Integer, db.ForeignKey('Users.id'))
 )
@@ -31,10 +31,10 @@ class User(db.Model, UserMixin):
         backref='user')
     chats = db.relationship('Chat',  primaryjoin='User.id == Chat.ownerUserId',
         backref='user')
-    chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
-    chatMessages = db.relationship('ChatMessage', 
+    # DBG chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
+    chatMessages = db.relationship('ChatMessage',
         primaryjoin='User.id == ChatMessage.fromUserId', backref='user')
-    blockUsers = db.relationship('User', secondary=block_users, backref='user')
+    # DBG blockUsers = db.relationship('User', secondary=block_users, backref='user')
 
     def __repr__(self):
         return 'Users {} {}'.format
@@ -66,7 +66,7 @@ class Chat(db.Model):
     # Уникальный идентификатор групповой переписки
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     # Создатель групповой переписки
-    ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))    
+    ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))
     chatMessages = db.relationship('ChatMessage',
         primaryjoin='Chat.id == ChatMessage.toChatId', backref='chat')
 
