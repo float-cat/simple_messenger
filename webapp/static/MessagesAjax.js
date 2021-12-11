@@ -2,7 +2,7 @@ msg = {
     lastId: 0,
 
     /* Метод добавляет новое сообщение в чат */
-    async setPM(idx, login, message)
+    async setPM(idx, login, message, time, isOwner)
     {
         output = document.getElementById('receiveDiv');
         /* Проверяем есть ли такая переписка */
@@ -11,11 +11,12 @@ msg = {
         newDiv.id = 'message' + idx;
         output.append(newDiv);
         /* Обновляем сообщение */
-        newDiv.innerHTML = '<b>' + login + ':</b> ' + message;
+        newDiv.innerHTML = '<b>' + login + ':</b> ' + message
+            + ' (' + time + ') : ' + isOwner;
     },
 
     /* Метод обновляет или добавляет новую переписку */
-    async setPMInfo(idx, login, message)
+    async setPMInfo(idx, login, message, time)
     {
         output = document.getElementById('messagesAllOutput');
         /* Проверяем есть ли такая переписка */
@@ -29,7 +30,8 @@ msg = {
         }
         /* Обновляем сообщение */
         newDiv.innerHTML = '<b><a href="messages?userid='
-            + idx + '">' + login + ':</a></b> ' + message;
+            + idx + '">' + login + ':</a></b> ' + message
+            + ' (' + time + ')';
     },
 
     async setNewPM(result)
@@ -40,7 +42,9 @@ msg = {
             msg.setPM(
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
-                result[result['msgids'][idx]]['message']
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time'],
+                result[result['msgids'][idx]]['isOwner']
             );
         }
     },
@@ -52,7 +56,8 @@ msg = {
             msg.setPMInfo(
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
-                result[result['msgids'][idx]]['message']
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time']
             );
         }
     },

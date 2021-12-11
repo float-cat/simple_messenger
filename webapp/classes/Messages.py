@@ -16,6 +16,17 @@ class Messages(object):
         Session = scoped_session(sessionmaker(bind=engine))
         self.session = Session()
 
+    def formatTime(self, timeString):
+        rows = timeString.split('.')
+        timeOfMessage = datetime.datetime.strptime(
+            rows[0],
+            "%Y-%m-%d %H:%M:%S"
+        )
+        today = datetime.datetime.today()
+        if (today.toordinal() - timeOfMessage.toordinal()) > 0:
+            return timeOfMessage.strftime("%d/%m/%Y")
+        return timeOfMessage.strftime("%H:%M")
+
     def sendMessage(self, toUserId, message):
         self.toUserId = html.escape(toUserId)        
         self.message = html.escape(message)
@@ -31,7 +42,7 @@ class Messages(object):
         lastId = html.escape(lastId)
         userId = html.escape(userId)
         result = self.session.execute(
-            f"""SELECT Messages.id, login, message
+            f"""SELECT Messages.id, login, message, sendDate, fromUserId
                 FROM Users
                 INNER JOIN Messages
                 WHERE Messages.id > {lastId}
@@ -58,6 +69,8 @@ class Messages(object):
         #        {
         #            "login": <login1>,
         #            "message": <message1>
+        #            "time": <time1>
+        #            "isOwner": <isOwner1>
         #        }
         #        ...
         #    }
@@ -71,6 +84,11 @@ class Messages(object):
             resultDict[row[0]] = {}
             resultDict[row[0]]['login'] = row[1]
             resultDict[row[0]]['message'] = row[2]
+            if row[3]:
+                resultDict[row[0]]['time'] = self.formatTime(row[3])
+            else:
+                resultDict[row[0]]['time'] = '--:--'
+            resultDict[row[0]]['isOwner'] = int(self.fromUserId == str(row[4]))
             lastId = str(row[0])
         resultDict['lastid'] = lastId
         jsonString = json.dumps(resultDict)
@@ -80,7 +98,7 @@ class Messages(object):
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, Messages.id,
-                    message, fromUserId
+                    message, sendDate, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = fromUserId
@@ -93,7 +111,7 @@ class Messages(object):
                     )
                 UNION
                 SELECT toUserId, login, Messages.id,
-                    message, fromUserId
+                    message, sendDate, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = toUserId
@@ -118,6 +136,7 @@ class Messages(object):
         #            "login": <login1>,
         #            "messageid": <messageid1>,
         #            "message": <message1>
+        #            "time": <time1>
         #        }
         #        ...
         #    }
@@ -136,8 +155,12 @@ class Messages(object):
                 resultDict[row[0]] = {}
                 resultDict[row[0]]['login'] = row[1]
                 resultDict[row[0]]['messageid'] = int(row[2])
-                if self.fromUserId == str(row[4]):
-                    resultDict[row[0]]['message'] = 'Вы:' + row[3]
+                if row[4]:
+                    resultDict[row[0]]['time'] = self.formatTime(row[4])
+                else:
+                    resultDict[row[0]]['time'] = '--:--'
+                if self.fromUserId == str(row[5]):
+                    resultDict[row[0]]['message'] = 'Вы: ' + row[3]
                 else:
                     resultDict[row[0]]['message'] = row[3]
         jsonString = json.dumps(resultDict)
