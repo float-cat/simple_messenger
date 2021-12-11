@@ -1,8 +1,8 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
-from webapp.FORMS import simple_messenger_login, simple_messenger_reg
-from datetime import timedelta
+from webapp.FORMS import simple_messenger_login, simple_messenger_reg, simple_messenger_messages
+
 
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
@@ -36,6 +36,17 @@ def create_app():
     def messages():
         if current_user.is_authenticated:
             return MessagesDiv()
+        else:
+            flash('Авторизуйтесь пожалуйста')
+            return redirect(url_for('auth'))
+
+    @app.route('/messages1')
+    def messages1():
+        title = "Сообщения"
+        messages_forms = simple_messenger_messages()
+        toUserId = request.args.get('userid')
+        if current_user.is_authenticated:
+            return render_template('messenger.html', page_title=title, form=messages_forms, user_name=current_user.login, toUserId=toUserId)
         else:
             flash('Авторизуйтесь пожалуйста')
             return redirect(url_for('auth'))
