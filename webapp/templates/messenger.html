@@ -1,0 +1,130 @@
+﻿{% extends "base.html" %}  
+{% block navbar %}
+  <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-dots" viewBox="0 0 16 16">
+  <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
+  <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+</svg> Simple Messenger</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
+        </li>
+		<li class="nav-item">
+          <a class="nav-link fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link fw-bolder dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Выпадающий список
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Опция 1</a></li>
+            <li><a class="dropdown-item" href="#">Опция 2</a></li>
+			<li><a class="dropdown-item" href="#">Опция 3</a></li>
+          </ul>
+        </li>
+        
+    
+      </ul>
+	   <span class="navbar-text">
+        Привет {{ user_name}}
+&nbsp;	
+&nbsp; <a href="{{ url_for("logout") }}">{{ form.exit() }}</a>
+      </span>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main_bg auth">
+	
+  <div class="row ">
+  
+    <div class="col-8 bg-light">
+	<br>
+	{% if toUserId %}
+	<form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
+                     <input name="typeRequest" style="display: none;">
+                     </input>
+                     <input name="newMessageTmp" style="display: none;">
+                     </input>
+                     <input name="toUserId" value="{{ toUserId }}" style="display: none;">
+                     </input>
+                     <input name="lastId" value="0" style="display: none;">
+                     </input>
+      <div class="input-group mb-3 ">
+
+  <button class="btn btn-primary" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">Отправить</button>
+  {{ form.newMessage() }}
+  </form>
+{% else %}
+<div class="input-group mb-3 ">
+ {{ form.submit() }}
+  {{ form.newMessage() }}
+{% endif %}  
+<br>
+</div>
+
+<div class='bg-white min-vh-100 border rounded' id="receiveDiv"></div>
+    </div>
+    <div class="col-4 bg-white" >
+       
+    <div class="list-group list-group-flush border-bottom scrollarea" id="messagesAllOutput">
+	<br>
+     
+    
+
+
+  
+  </div>
+   <br>
+	<div>
+<form name="searchUsersForm">
+     <div class="input-group mb-3 ">
+  <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
+  <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
+</div>
+</form>
+<ul class="list-group" id="outputUsers">
+</ul>
+
+</div>  
+</div>    
+  
+  
+        
+
+</div>
+ </div>
+
+ <script type="text/javascript" src="/static/MessagesAjax.js">
+                 </script>
+<form name="allPMInfo">
+                    <input name="typeRequest" style="display: none;"
+                        value="allPMInfo">
+                    </input>
+                   </form>
+                   <script type="text/javascript">
+                    setInterval(
+                     () => msg.updateAllPM(document.forms['allPMInfo']),
+                     2000
+                    );
+                   </script>
+
+				   {% if toUserId %}
+				    <script type="text/javascript">
+                     setInterval(
+                      () => msg.update(document.forms['sendForm']),
+                      2000
+                     );
+                    </script>
+					{% endif %}
+
+<script type="text/javascript" src="/static/SearchUsersAjax.js"></script>
+{% endblock %}
