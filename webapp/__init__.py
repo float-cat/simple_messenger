@@ -1,11 +1,12 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, current_user
 from webapp.MODEL import db, User
-from webapp.FORMS import simple_messenger_login, simple_messenger_reg
-from datetime import timedelta
+from webapp.FORMS import simple_messenger_login, simple_messenger_reg, simple_messenger_messages
+
 
 from webapp.modules.MessagesDiv import MessagesDiv
 from webapp.handlers.MessagesHandler import MessagesHandler
+from webapp.handlers.SearchUsersHandler import SearchUsersHandler
 
 
 def create_app():
@@ -39,12 +40,29 @@ def create_app():
             flash('Авторизуйтесь пожалуйста')
             return redirect(url_for('auth'))
 
+    @app.route('/messages1')
+    def messages1():
+        title = "Сообщения"
+        messages_forms = simple_messenger_messages()
+        toUserId = request.args.get('userid')
+        if current_user.is_authenticated:
+            return render_template('messenger.html', page_title=title, form=messages_forms, user_name=current_user.login, toUserId=toUserId)
+        else:
+            flash('Авторизуйтесь пожалуйста')
+            return redirect(url_for('auth'))
+
 
 
     # Служебная страница обработчик формы сообщений по AJAX
     @app.route('/messagesproc', methods=['POST'])
     def process_messages():
         return MessagesHandler(db)
+
+    
+    # Служебная страница обработчик формы поиска пользователей по AJAX
+    @app.route('/searchusersproc', methods=['POST'])
+    def process_search():
+        return SearchUsersHandler(db)
 
 
     'Страница авторизации'

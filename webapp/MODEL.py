@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
     chats = db.relationship('Chat',  primaryjoin='User.id == Chat.ownerUserId',
         backref='user')
     # DBG chatUsers = db.relationship('Chat', secondary=chat_users, backref='user')
-    chatMessages = db.relationship('ChatMessage', 
+    chatMessages = db.relationship('ChatMessage',
         primaryjoin='User.id == ChatMessage.fromUserId', backref='user')
     # DBG blockUsers = db.relationship('User', secondary=block_users, backref='user')
 
@@ -66,7 +66,7 @@ class Chat(db.Model):
     # Уникальный идентификатор групповой переписки
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     # Создатель групповой переписки
-    ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))    
+    ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))
     chatMessages = db.relationship('ChatMessage',
         primaryjoin='Chat.id == ChatMessage.toChatId', backref='chat')
 

@@ -1,9 +1,7 @@
 import html
-import sqlalchemy
 import json
 
 from sqlalchemy.orm import sessionmaker, scoped_session
-from webapp.MODEL import db
 import datetime
 
 class Messages(object):
@@ -15,6 +13,17 @@ class Messages(object):
         engine = self.db.engine
         Session = scoped_session(sessionmaker(bind=engine))
         self.session = Session()
+
+    def formatTime(self, timeString):
+        rows = timeString.split('.')
+        timeOfMessage = datetime.datetime.strptime(
+            rows[0],
+            "%Y-%m-%d %H:%M:%S"
+        )
+        today = datetime.datetime.today()
+        if (today.toordinal() - timeOfMessage.toordinal()) > 0:
+            return timeOfMessage.strftime("%d/%m/%Y")
+        return timeOfMessage.strftime("%H:%M")
 
     def sendMessage(self, toUserId, message):
         self.toUserId = html.escape(toUserId)        
@@ -28,11 +37,10 @@ class Messages(object):
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
-        textplain = ""   
         lastId = html.escape(lastId)
         userId = html.escape(userId)
         result = self.session.execute(
-            f"""SELECT Messages.id, login, message
+            f"""SELECT Messages.id, login, message, sendDate, fromUserId
                 FROM Users
                 INNER JOIN Messages
                 WHERE Messages.id > {lastId}
@@ -54,11 +62,13 @@ class Messages(object):
         #        {
         #            "0": <id1>
         #            ...
-        #        }
+        #        },
         #        "id1":
         #        {
         #            "login": <login1>,
         #            "message": <message1>
+        #            "time": <time1>
+        #            "isOwner": <isOwner1>
         #        }
         #        ...
         #    }
@@ -72,17 +82,21 @@ class Messages(object):
             resultDict[row[0]] = {}
             resultDict[row[0]]['login'] = row[1]
             resultDict[row[0]]['message'] = row[2]
+            if row[3]:
+                resultDict[row[0]]['time'] = self.formatTime(row[3])
+            else:
+                resultDict[row[0]]['time'] = '--:--'
+            resultDict[row[0]]['isOwner'] = int(self.fromUserId == str(row[4]))
             lastId = str(row[0])
         resultDict['lastid'] = lastId
         jsonString = json.dumps(resultDict)
         return jsonString
 
     def getAllPMInfo(self):
-        jsonString = ""
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, Messages.id,
-                    message, fromUserId
+                    message, sendDate, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = fromUserId
@@ -90,11 +104,12 @@ class Messages(object):
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
+                        WHERE toUserId = {self.fromUserId}
                         GROUP BY fromUserId
                     )
                 UNION
                 SELECT toUserId, login, Messages.id,
-                    message, fromUserId
+                    message, sendDate, fromUserId
                 FROM Messages
                 LEFT JOIN Users
                 WHERE Users.id = toUserId
@@ -102,6 +117,7 @@ class Messages(object):
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
+                        WHERE fromUserId = {self.fromUserId}
                         GROUP BY toUserId
                     )""")
         # Объявляем словарь для формирования ответа
@@ -112,12 +128,13 @@ class Messages(object):
         #        {
         #            "0": <id1>
         #            ...
-        #        }
+        #        },
         #        "id1":
         #        {
         #            "login": <login1>,
         #            "messageid": <messageid1>,
         #            "message": <message1>
+        #            "time": <time1>
         #        }
         #        ...
         #    }
@@ -136,8 +153,12 @@ class Messages(object):
                 resultDict[row[0]] = {}
                 resultDict[row[0]]['login'] = row[1]
                 resultDict[row[0]]['messageid'] = int(row[2])
-                if self.fromUserId == str(row[4]):
-                    resultDict[row[0]]['message'] = 'Вы:' + row[3]
+                if row[4]:
+                    resultDict[row[0]]['time'] = self.formatTime(row[4])
+                else:
+                    resultDict[row[0]]['time'] = '--:--'
+                if self.fromUserId == str(row[5]):
+                    resultDict[row[0]]['message'] = 'Вы: ' + row[3]
                 else:
                     resultDict[row[0]]['message'] = row[3]
         jsonString = json.dumps(resultDict)
