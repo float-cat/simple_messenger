@@ -3,11 +3,12 @@ searchUsers = {
     async setUser(idx, login)
     {
         output = document.getElementById('outputUsers');
-        newDiv = document.createElement('div');
-        newDiv.id = 'message' + idx;
-        output.append(newDiv);
+        newLi = document.createElement('li');
+        newLi.className = "list-group-item"
+        newLi.id = 'message' + idx;
+        output.append(newLi);
         /* Создаем ссылку на переписку с пользователем */
-        newDiv.innerHTML = '<a href="?userid=' + idx + '"><b>' + login + '</b></a>';
+        newLi.innerHTML = '<a href="?userid=' + idx + '">' + login + '</a>';
     },
 
     async setFindUsers(result)
