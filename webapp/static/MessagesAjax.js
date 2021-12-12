@@ -11,27 +11,53 @@ msg = {
         newDiv.id = 'message' + idx;
         output.append(newDiv);
         /* Обновляем сообщение */
-        newDiv.innerHTML = '<b>' + login + ':</b> ' + message
-            + ' (' + time + ') : ' + isOwner;
+        if (isOwner == 1){
+            newDiv.innerHTML = '<div class="row justify-content-start">\
+                <div class=" col col-11 col-sm-11 col-md-8\
+                col-lg-6 alert alert-primary "\
+                role="alert"><b>' + login + '&nbsp;</b> ' + time
+                + '<p>' + message +'</p></div></div>';}
+        else{
+            newDiv.innerHTML = '<div class="row justify-content-end">\
+                <div class=" col-11 col-sm-11 col-md-8\
+                col-lg-6 col alert alert-secondary "\
+                role="alert"><b>' + login + '&nbsp;</b> ' + time
+                + '<p>' + message +'</p></div></div>';}
+
+
     },
 
     /* Метод обновляет или добавляет новую переписку */
     async setPMInfo(idx, login, message, time)
     {
         output = document.getElementById('messagesAllOutput');
-        /* Проверяем есть ли такая переписка */
-        let newDiv = document.getElementById('user' + idx);
-        if(newDiv === null)
+        /* Проверяем есть ли такая переписка (div заменен на a) */
+        let newA = document.getElementById('user' + idx);
+        let url = (new URL(document.location)).searchParams;
+
+        if(newA === null)
         {
             /* Если нет, то создаем новую */
-            newDiv = document.createElement('div');
-            newDiv.id = 'user' + idx;
-            output.append(newDiv);
+            newA = document.createElement('a');
+            newA.setAttribute("href", "messages?userid=" + idx);
+            if ( idx == url.get('userid'))
+            {
+                newA.className = 'list-group-item list-group-item-action\
+                    active py-3 lh-tight';
+                newA.setAttribute("aria-current", "true");}
+            else {
+                newA.className = 'list-group-item\
+                    list-group-item-action py-3 lh-tight';
+            }
+            newA.id = 'user' + idx;
+            output.append(newA);
         }
         /* Обновляем сообщение */
-        newDiv.innerHTML = '<b><a href="messages?userid='
-            + idx + '">' + login + ':</a></b> ' + message
-            + ' (' + time + ')';
+        newA.innerHTML ='<div class="d-flex w-100\
+            align-items-center justify-content-between"><strong class="mb-1">'
+            + login + '</strong><small>' + time
+            + '</small></div><div class="col-10 mb-1 small">'
+            + message + '</div>';
     },
 
     async setNewPM(result)
