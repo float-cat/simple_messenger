@@ -83,14 +83,26 @@
 
   
   </div>
-     
-    
+   <br>
+	<div>
+<form name="searchUsersForm">
+     <div class="input-group mb-3 ">
+  <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
+  <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
+</div>
+</form>
+<ul class="list-group" id="outputUsers">
+</ul>
+
+</div>  
+</div>    
   
   
         
 
 </div>
  </div>
+
  <script type="text/javascript" src="/static/MessagesAjax1.js">
                  </script>
 <form name="allPMInfo">
@@ -104,6 +116,7 @@
                      2000
                     );
                    </script>
+
 				   {% if toUserId %}
 				    <script type="text/javascript">
                      setInterval(
@@ -112,4 +125,6 @@
                      );
                     </script>
 					{% endif %}
+
+<script type="text/javascript" src="/static/SearchUsersAjax.js">
 {% endblock %}
