@@ -2,7 +2,7 @@ msg = {
     lastId: 0,
 
     /* Метод добавляет новое сообщение в чат */
-    async setPM(idx, login, message)
+    async setPM(idx, login, message, time, isOwner)
     {
         output = document.getElementById('receiveDiv');
         /* Проверяем есть ли такая переписка */
@@ -11,11 +11,18 @@ msg = {
         newDiv.id = 'message' + idx;
         output.append(newDiv);
         /* Обновляем сообщение */
-        newDiv.innerHTML = '<b>' + login + ':</b> ' + message;
+        if (isOwner == 1){
+        newDiv.innerHTML = '<div class="row justify-content-start"><div class=" col col-11 col-sm-11 col-md-8 col-lg-6 alert alert-primary " role="alert"><b>' + login + '&nbsp;</b> ' + time
+        + '<p>' + message +'</p></div></div>';}
+        else{
+        newDiv.innerHTML = '<div class="row justify-content-end"><div class=" col-11 col-sm-11 col-md-8 col-lg-6 col alert alert-secondary " role="alert"><b>' + login + '&nbsp;</b> ' + time
+        + '<p>' + message +'</p></div></div>';}
+
+
     },
 
     /* Метод обновляет или добавляет новую переписку */
-    async setPMInfo(idx, login, message)
+    async setPMInfo(idx, login, message, time)
     {
         output = document.getElementById('messagesAllOutput');
         /* Проверяем есть ли такая переписка (div заменен на a) */
@@ -38,7 +45,7 @@ msg = {
         }
         /* Обновляем сообщение */
         newA.innerHTML ='<div class="d-flex w-100 align-items-center justify-content-between"><strong class="mb-1">'
-        + login + '</strong><small>tut_time</small></div><div class="col-10 mb-1 small">'
+        + login + '</strong><small>' + time + '</small></div><div class="col-10 mb-1 small">'
         + message + '</div>';
     },
 
@@ -50,7 +57,9 @@ msg = {
             msg.setPM(
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
-                result[result['msgids'][idx]]['message']
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time'],
+                result[result['msgids'][idx]]['isOwner']
             );
         }
     },
@@ -62,7 +71,8 @@ msg = {
             msg.setPMInfo(
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
-                result[result['msgids'][idx]]['message']
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time']
             );
         }
     },
