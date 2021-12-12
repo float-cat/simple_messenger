@@ -1,7 +1,7 @@
-{% extends "base.html" %}  
+﻿{% extends "base.html" %}  
 {% block navbar %}
 <nav class="navbar fixed-top navbar-expand-lg navbar navbar-dark bg-primary ">
-  <div class="container-fluid">
+  <div class="container-fluid top">
     <a class="navbar-brand fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-dots" viewBox="0 0 16 16">
   <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
   <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
@@ -10,7 +10,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 clearfix">
         <li class="nav-item">
           <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
         </li>
@@ -38,7 +38,10 @@
 
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
+
+<div class="container-fluid bg-white">
+ <div class="row align-items-start auth">
+ {% with messages = get_flashed_messages() %}
    {% if messages %}
       {% for message in messages %}
 	  <div class="row  justify-content-center auth">
@@ -51,20 +54,74 @@
       {% endfor %}
    {% endif %}
 {% endwith %}
-<div class="container-fluid  auth">
+    <div class="col">
+<h4>Цель</h4>	
+<p>Написать простой мессенджер, позволяющий отправлять друг другу сообщения в режиме реального времени</p>
 
- <div class="jumbotron border border-dark rounded-0 auth">
-  <h1 class="display-4">Привет!</h1>
-  <p class="lead">Добро пожаловать в Simple Messenger </p>
-  <hr class="my-4">
-  <p>На текущий момент функционал нашего приложения включает в себя:</p>
+<h4>Задачи</h4>
+<ul>
+<li>Спроектировать модель базы данных для мессенджера</li>
+<li>Разработать шаблон дизайна сайта</li>
+<li>Сделать аутентификацию пользователя</li>
+<li>Разработать обмен сообщениями между пользователями в режиме реального времени
   <ul>
-  <li>Личные переписки;</li>
-  <li>Групповые переписки;</li>
-  <li>Еще пункт;</li>
-  <li>и еще один.</li>
-  </ul><br>
-  <a class="btn btn-primary btn-lg" href="#" role="button">Узнать больше</a>
-</div>
+    <li> Отправка сообщений</li>
+    <li> Прием сообщений</li>
+  </ul>
+</li>
+<li>Получение списка всех последних сообщений</li>
+<li>Сделать простой поиск по всем пользователям</li>
+<li>Связать дизайн сайта с его логикой через шаблонизатор</li>
+</ul>
+
+
+<p><img src="https://sun9-29.userapi.com/impg/e3LXtXzvZox6b9ErzjW1-qmAhxCCSO8UDfrtuw/zyZCHqTxa0Y.jpg?size=1366x768&quality=96&sign=0d519d36c66def77472603bb6aedf222&type=album"  class="img-fluid"/></p>
+
+<p>## Cтруктура проекта</p>
+
+.
+├── admin_createuser.py</br>
+├── create_db.py</br>
+├── dbscript</br>
+│   └── createdb.sql</br>
+├── README.md</br>
+├── requirements.txt</br>
+└── webapp</br>
+    ├── classes</br>
+    │   ├── Messages.py</br>
+    │   └── SearchUsers.py</br>
+    ├── config.py</br>
+    ├── FORMS.py</br>
+    ├── handlers</br>
+    │   ├── AuthHandler.py</br>
+    │   ├── MessagesHandler.py</br>
+    │   ├── RegisterHandler.py</br>
+    │   └── SearchUsersHandler.py</br>
+    ├── __init__.py</br>
+    ├── MODEL.py</br>
+    ├── modules</br>
+    │   ├── AuthPage.py</br>
+    │   ├── IndexPage.py</br>
+    │   ├── LogoutPage.py</br>
+    │   ├── MessagesPage.py</br>
+    │   └── RegisterPage.py</br>
+    ├── README.md</br>
+    ├── static</br>
+    │   ├── css</br>
+    │   │   └── style.css</br>
+    │   ├── MessagesAjax.js</br>
+    │   └── SearchUsersAjax.js</br>
+    └── templates</br>
+        ├── auth.html</br>
+        ├── base.html</br>
+        ├── index.html</br>
+        ├── messenger.html</br>
+        └── reg_user.html</br>
+```
+</br>
+<p>В разработке, текущая актуальная ветка - <b>stage</b></p>
+
+    </div>
+ </div>
 </div>
 {% endblock %}
