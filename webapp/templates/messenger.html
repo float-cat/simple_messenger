@@ -5,7 +5,7 @@
     <a class="navbar-brand fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-dots" viewBox="0 0 16 16">
   <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
   <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-</svg> Sample Messenger</a>
+</svg> Simple Messenger</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -83,15 +83,27 @@
 
   
   </div>
-     
-    
+   <br>
+	<div>
+<form name="searchUsersForm">
+     <div class="input-group mb-3 ">
+  <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
+  <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
+</div>
+</form>
+<ul class="list-group" id="outputUsers">
+</ul>
+
+</div>  
+</div>    
   
   
         
 
 </div>
  </div>
- <script type="text/javascript" src="/static/MessagesAjax1.js">
+
+ <script type="text/javascript" src="/static/MessagesAjax.js">
                  </script>
 <form name="allPMInfo">
                     <input name="typeRequest" style="display: none;"
@@ -104,6 +116,7 @@
                      2000
                     );
                    </script>
+
 				   {% if toUserId %}
 				    <script type="text/javascript">
                      setInterval(
@@ -112,4 +125,6 @@
                      );
                     </script>
 					{% endif %}
+
+<script type="text/javascript" src="/static/SearchUsersAjax.js"></script>
 {% endblock %}
