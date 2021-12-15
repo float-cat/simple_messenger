@@ -67,6 +67,8 @@ class Chat(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     # Создатель групповой переписки
     ownerUserId = db.Column(db.Integer(), db.ForeignKey('Users.id'))
+    # Название групповой переписки
+    caption = db.Column(db.String(60), nullable=False)
     chatMessages = db.relationship('ChatMessage',
         primaryjoin='Chat.id == ChatMessage.toChatId', backref='chat')
 
