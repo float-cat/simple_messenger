@@ -1,21 +1,24 @@
-.auth{
-margin-top: 40px;
-padding: 20px;
+.auth {
+    margin-top: 40px;
+    padding: 20px;
 }
 
-#receiveDiv{
-padding: 25px;}
-
-.smile{
- text-decoration: none !important;
+#receiveDiv {
+    padding: 25px;
 }
 
-@media (max-width: 760px) { 
-.perepis{display:none !important;}
+.smile {
+    text-decoration: none !important;
+}
 
- }
+@media (max-width: 760px) {
+    .perepis {
+        display:none !important;
+    }
+}
 @media (min-width: 760px) { 
+    .dialogs-button {
+        display: none;
+    }
+}
 
-.dialogs-button{display: none;}
-
- }
