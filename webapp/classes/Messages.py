@@ -14,6 +14,18 @@ class Messages(object):
         Session = scoped_session(sessionmaker(bind=engine))
         self.session = Session()
 
+    def granted(self, chatId):
+        result = self.session.execute(
+            f"""SELECT userId
+                FROM ChatUsers
+                WHERE userId = {self.fromUserId}
+                    AND chatid = {chatId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return True
+        return False
+
     def formatTime(self, timeString):
         rows = timeString.split('.')
         timeOfMessage = datetime.datetime.strptime(
@@ -57,6 +69,13 @@ class Messages(object):
         if userId[0] == 'c':
             isChat = True
             userId = userId[1:]
+            # Если нет доступа к групповому чату
+            if not self.granted(userId):
+                resultDict = {}                
+                resultDict['error'] = 'Not Granted!'
+                resultDict['lastid'] = 1
+                jsonString = json.dumps(resultDict)
+                return jsonString
         if isChat:
             result = self.session.execute(
                 f"""SELECT ChatMessages.id, login, message, sendDate,
