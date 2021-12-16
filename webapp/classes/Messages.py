@@ -26,33 +26,63 @@ class Messages(object):
         return timeOfMessage.strftime("%H:%M")
 
     def sendMessage(self, toUserId, message):
+        isChat = False
         self.toUserId = html.escape(toUserId)        
         self.message = html.escape(message)
+        if toUserId[0] == 'c':
+            isChat = True
+            self.toUserId = self.toUserId[1:]
         today = datetime.datetime.now()
-        self.session.execute(
-            f"""INSERT INTO Messages
-                  (fromUserId, toUserId, message, sendDate)
-                VALUES ({self.fromUserId},
-                  {self.toUserId}, '{self.message}', '{today}')""")
+        if isChat:
+            self.session.execute(
+                f"""INSERT INTO ChatMessages
+                      (fromUserId, toChatId, message, sendDate)
+                    VALUES ({self.fromUserId},
+                      {int(self.toUserId)}, '{self.message}', '{today}')"""
+            )
+        else:
+            self.session.execute(
+                f"""INSERT INTO Messages
+                      (fromUserId, toUserId, message, sendDate)
+                    VALUES ({self.fromUserId},
+                      {self.toUserId}, '{self.message}', '{today}')"""
+            )
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
+        result = 0
+        isChat = False
         lastId = html.escape(lastId)
         userId = html.escape(userId)
-        result = self.session.execute(
-            f"""SELECT Messages.id, login, message, sendDate, fromUserId
-                FROM Users
-                INNER JOIN Messages
-                WHERE Messages.id > {lastId}
-                  AND Users.id == Messages.fromUserId
-                  AND (
-                    Messages.fromUserId = {self.fromUserId}
-                    OR Messages.toUserId = {self.fromUserId}
-                  )
-                  AND (
-                    Messages.fromUserId = {userId}
-                    OR Messages.toUserId = {userId}
-                  )""")
+        if userId[0] == 'c':
+            isChat = True
+            userId = userId[1:]
+        if isChat:
+            result = self.session.execute(
+                f"""SELECT ChatMessages.id, login, message, sendDate,
+                        fromUserId
+                    FROM ChatMessages
+                    JOIN Users
+                        ON fromUserId = Users.id
+                    WHERE ChatMessages.id >  {lastId}
+                        AND toChatId = {userId}"""
+            )
+        else:
+            result = self.session.execute(
+                f"""SELECT Messages.id, login, message, sendDate, fromUserId
+                    FROM Users
+                    JOIN Messages
+                        ON Users.id == Messages.fromUserId
+                    WHERE Messages.id > {lastId}
+                      AND (
+                        Messages.fromUserId = {self.fromUserId}
+                        OR Messages.toUserId = {self.fromUserId}
+                      )
+                      AND (
+                        Messages.fromUserId = {userId}
+                        OR Messages.toUserId = {userId}
+                      )"""
+            )
         # Объявляем словарь для формирования ответа
         #  Структура ответа
         #    {
@@ -98,9 +128,9 @@ class Messages(object):
             f"""SELECT fromUserId, login, login, Messages.id,
                     message, sendDate, fromUserId
                 FROM Messages
-                LEFT JOIN Users
-                WHERE Users.id = fromUserId
-                    AND toUserId = {self.fromUserId}
+                JOIN Users
+                    ON Users.id = fromUserId
+                WHERE toUserId = {self.fromUserId}
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
@@ -111,9 +141,9 @@ class Messages(object):
                 SELECT toUserId, login, login, Messages.id,
                     message, sendDate, fromUserId
                 FROM Messages
-                LEFT JOIN Users
-                WHERE Users.id = toUserId
-                    AND fromUserId = {self.fromUserId}
+                JOIN Users
+                    ON Users.id = toUserId
+                WHERE fromUserId = {self.fromUserId}
                     AND Messages.id IN (
                         SELECT MAX(id)
                         FROM Messages
@@ -121,21 +151,24 @@ class Messages(object):
                         GROUP BY toUserId
                     )
                 UNION
-                SELECT MAX(ChatMessages.id), caption, login,
+                SELECT toChatId, caption, login,
                     ChatMessages.id, message, sendDate, fromUserId
                 FROM ChatMessages
                 JOIN Users
                     ON Users.id = fromUserId
                 JOIN Chats
                     ON Chats.id = toChatId
-                WHERE toChatId
-                    IN (
+                WHERE toChatId IN (
                         SELECT chatId 
                         FROM ChatUsers
                         WHERE userId = {self.fromUserId}
                     )
-                GROUP BY toChatId
-""")
+                    AND ChatMessages.id IN (
+                        SELECT MAX(id)
+                        FROM ChatMessages
+                        GROUP BY toChatId
+                    )"""
+        )
         # Объявляем словарь для формирования ответа
         #  Структура ответа
         #    {
