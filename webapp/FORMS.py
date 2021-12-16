@@ -8,7 +8,7 @@ class simple_messenger_login(FlaskForm):
     login = StringField('Логин', validators=[DataRequired()], render_kw={"class": "form-control"})
     password = PasswordField('Пароль', validators=[DataRequired()], render_kw={"class": "form-control"})
     submit = SubmitField('Авторизация', render_kw={"class": "btn btn-primary"})
-    checkbox = BooleanField('Запонить меня', default=True, render_kw={"class": "form-check-input"})
+    checkbox = BooleanField('Запомнить меня', default=True, render_kw={"class": "form-check-input"})
 
 class simple_messenger_reg(FlaskForm):
     login = StringField('Логин', validators=[DataRequired()], render_kw={"class": "form-control"})

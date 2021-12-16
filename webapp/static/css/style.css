@@ -1,7 +1,24 @@
-.auth{
-margin-top: 40px;
-padding: 20px;
+.auth {
+    margin-top: 40px;
+    padding: 20px;
 }
 
-#receiveDiv{
-padding: 25px;}
+#receiveDiv {
+    padding: 25px;
+}
+
+.smile {
+    text-decoration: none !important;
+}
+
+@media (max-width: 760px) {
+    .perepis {
+        display:none !important;
+    }
+}
+@media (min-width: 760px) { 
+    .dialogs-button {
+        display: none;
+    }
+}
+
