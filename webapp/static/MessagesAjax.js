@@ -40,6 +40,8 @@ msg = {
         }
         /* Проверяем есть ли такая переписка (div заменен на a) */
         let newA = document.getElementById('user' + idx);
+       	if(isChat)
+       	    newA = document.getElementById('chat' + idx);
         let url = (new URL(document.location)).searchParams;
 
         if(newA === null)
@@ -61,7 +63,10 @@ msg = {
                 newA.className = 'list-group-item\
                     list-group-item-action py-3 lh-tight';
             }
-            newA.id = 'user' + idx;
+            if(isChat)
+                newA.id = 'chat' + idx;
+            else
+                newA.id = 'user' + idx;
             output.append(newA);
         }
         /* Обновляем сообщение */
