@@ -28,7 +28,7 @@ CREATE TABLE Messages (
     -- Получатель сообщения
     toUserId INT,
     -- Сообщение
-    message NVARCHAR(255) UNIQUE NOT NULL,
+    message NVARCHAR(255) NOT NULL,
     -- Время и дата отправления
     sendDate DATE NOT NULL,
     -- Зависимость к первичному ключу пользователя
@@ -42,6 +42,8 @@ CREATE TABLE Chats (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     -- Создатель групповой переписки
     ownerUserId INT NOT NULL,
+    -- Название групповой переписки
+    login NVARCHAR(60) NOT NULL,
     -- Зависимость к первичному ключу пользователя
     FOREIGN KEY (ownerUserId) REFERENCES Users(id)
 );
@@ -69,7 +71,7 @@ CREATE TABLE ChatMessages (
     -- Идентификатор групповой переписки
     toChatId INT NOT NULL,
     -- Сообщение
-    message NVARCHAR(20) UNIQUE NOT NULL,
+    message NVARCHAR(255) NOT NULL,
     -- Время и дата отправления
     sendDate DATE NOT NULL,
     -- Зависимость к первичному ключу пользователя

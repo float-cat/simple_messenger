@@ -30,26 +30,43 @@ msg = {
     /* Метод обновляет или добавляет новую переписку */
     async setPMInfo(idx, login, message, time)
     {
+        let isChat = false;
         output = document.getElementById('messagesAllOutput');
+        /* Проверяем групповая переписка или личная */
+        if (idx[0] == 'c')
+        {
+            isChat = true;
+            idx = idx.slice(1);
+        }
         /* Проверяем есть ли такая переписка (div заменен на a) */
         let newA = document.getElementById('user' + idx);
+       	if(isChat)
+       	    newA = document.getElementById('chat' + idx);
         let url = (new URL(document.location)).searchParams;
 
         if(newA === null)
         {
             /* Если нет, то создаем новую */
             newA = document.createElement('a');
-            newA.setAttribute("href", "messages?userid=" + idx);
-            if ( idx == url.get('userid'))
+            if(isChat)
+                newA.setAttribute("href", "messages?chatid=" + idx);
+            else
+                newA.setAttribute("href", "messages?userid=" + idx);
+            if ((idx == url.get('userid') && !isChat)
+                || (idx == url.get('chatid') && isChat))
             {
                 newA.className = 'list-group-item list-group-item-action\
                     active py-3 lh-tight';
-                newA.setAttribute("aria-current", "true");}
+                newA.setAttribute("aria-current", "true");
+            }
             else {
                 newA.className = 'list-group-item\
                     list-group-item-action py-3 lh-tight';
             }
-            newA.id = 'user' + idx;
+            if(isChat)
+                newA.id = 'chat' + idx;
+            else
+                newA.id = 'user' + idx;
             output.append(newA);
         }
         /* Обновляем сообщение */

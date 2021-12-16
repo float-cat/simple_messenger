@@ -7,6 +7,9 @@ def MessagesPage():
     # Создаем форму для отправки сообщений
     messages_forms = simple_messenger_messages()
     toUserId = request.args.get('userid')
+    toChatId = request.args.get('chatid')
+    if toChatId:
+        toUserId = 'c' + toChatId
     if current_user.is_authenticated:
         return render_template(
             'messenger.html',
