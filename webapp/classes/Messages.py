@@ -93,14 +93,15 @@ class Messages(object):
                     JOIN Messages
                         ON Users.id == Messages.fromUserId
                     WHERE Messages.id > {lastId}
-                      AND (
-                        Messages.fromUserId = {self.fromUserId}
-                        OR Messages.toUserId = {self.fromUserId}
-                      )
-                      AND (
-                        Messages.fromUserId = {userId}
-                        OR Messages.toUserId = {userId}
-                      )"""
+                        AND ((
+                                Messages.fromUserId = {self.fromUserId}
+                                AND Messages.toUserId = {userId}
+                            )
+                            OR (
+                                Messages.fromUserId = {userId}
+                                AND Messages.toUserId = {self.fromUserId}
+                            )
+                        )"""
             )
         # Объявляем словарь для формирования ответа
         #  Структура ответа
