@@ -239,3 +239,61 @@ class Messages(object):
                     resultDict[idx]['message'] = row[4]
         jsonString = json.dumps(resultDict)
         return jsonString
+
+    def appendToGroupChat(self, userId, chatId):
+        # Проверяем является ли пользователь, который
+        #  добавляет, создателем переписки
+        result = self.session.execute(
+            f"""SELECT ownerUserId
+                FROM Chats
+                WHERE ownerUserId = {self.fromUserId}
+                    AND id = {chatId}"""
+        )
+        row = result.fetchone()
+        if not row:
+            return '{"status": "fail"}'
+        # Проверяем добавлен ли уже пользователь в чат
+        result = self.session.execute(
+            f"""SELECT userId
+                FROM ChatUsers
+                WHERE userId = {userId}
+                    AND chatid = {chatId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return '{"status": "fail"}'
+        # Добавляем пользователя в групповую переписку
+        self.session.execute(
+            f"""INSERT INTO ChatUsers (chatId, userId)
+                VALUES ({chatId}, {userId})"""
+        )
+        self.session.commit()
+        return '{"status": "ok"}'
+
+    def createNewGroupMessages(self, caption):
+        # Добавляем групповую переписку
+        self.session.execute(
+            f"""INSERT INTO Chats (ownerUserId, caption)
+                VALUES ({self.fromUserId}, '{caption}')"""
+        )
+        self.session.commit()
+        # Получаем идентификатор новой переписки
+        result = self.session.execute(
+            f"""SELECT MAX(id)
+                FROM Chats                
+                WHERE ownerUserId = {self.fromUserId}
+                GROUP BY ownerUserId"""
+        )
+        row = result.fetchone()
+        if not row:
+            return '{"newgm": 0}'
+        chatId = row[0]
+        # Добавляем создающего пользователя в групповую переписку
+        self.session.execute(
+            f"""INSERT INTO ChatUsers (chatId, userId)
+                VALUES ({chatId}, {self.fromUserId})"""
+        )
+        self.session.commit()
+        self.sendMessage('c' + str(chatId), 'Создал групповую переписку!')
+        return '{"newgm": ' + str(chatId) + '}'
+
