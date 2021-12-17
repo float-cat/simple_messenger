@@ -28,4 +28,9 @@ def MessagesHandler(db):
     elif typeRequest == 'allPMInfo':
         dialogs = msg.getAllPMInfo()
         return dialogs
+    # Новая групповая переписка
+    elif typeRequest == 'newGM':
+        caption = request.form.get('caption')
+        newIdInfo = msg.createNewGroupMessages(caption)
+        return newIdInfo
     return 'Request Fail!'

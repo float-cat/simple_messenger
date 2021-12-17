@@ -105,6 +105,25 @@ msg = {
         }
     },
 
+    /* Метод, создающий новую групповую переписку */
+    async createNewGM(form)
+    {
+        let formData = new FormData(form);
+        formData.append('typeRequest', 'newGM');
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        /* Редиректим на страницу нового чата */
+        document.location = '/messages?chatid=' + result['newgm']
+    },
+
     /* Метод, отправляющий сообщение */
     async send(form, toUserId)
     {
