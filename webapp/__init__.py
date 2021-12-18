@@ -42,13 +42,6 @@ def create_app():
         return MessagesPage()
 
 
-    # Тестовая страница для создания новой групповой переписки
-    @app.route('/newgm')
-    def newgm():
-        return NewGroupMessagesPage()
-
-
-
     # Служебная страница обработчик формы сообщений по AJAX
     @app.route('/messagesproc', methods=['POST'])
     def process_messages():

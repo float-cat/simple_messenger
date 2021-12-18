@@ -3,7 +3,7 @@
 ## Инструкция по запуску
 
 * установите python3.9
-* установите flask, flask\_login, flask\_wtf
+* установите flask, flask\_login, flask\_wtf, email-validator
 * для запуска перейдите на уровень выше webapp
 * выполните команду
 ```sh
