@@ -32,6 +32,7 @@ msg = {
     {
         let isChat = false;
         output = document.getElementById('messagesAllOutput');
+        output_mobile = document.getElementById('messagesAllOutputmobile');
         /* Проверяем групповая переписка или личная */
         if (idx[0] == 'c')
         {
@@ -40,37 +41,66 @@ msg = {
         }
         /* Проверяем есть ли такая переписка (div заменен на a) */
         let newA = document.getElementById('user' + idx);
+        let newAmobile = document.getElementById('usermobile' + idx);
        	if(isChat)
        	    newA = document.getElementById('chat' + idx);
+       	    newAmobile = document.getElementById('chatmobile' + idx);
         let url = (new URL(document.location)).searchParams;
 
-        if(newA === null)
+        if((newA === null) && (newAmobile === null))
         {
             /* Если нет, то создаем новую */
             newA = document.createElement('a');
-            if(isChat)
+            newAmobile = document.createElement('a');
+            if(isChat){
                 newA.setAttribute("href", "messages?chatid=" + idx);
-            else
+                newAmobile.setAttribute("href", "messages?chatid=" + idx);}
+            else{
                 newA.setAttribute("href", "messages?userid=" + idx);
+                newA.setAttribute("href", "messages?userid=" + idx);
+                newAmobile.setAttribute("href", "messages?userid=" + idx);
+                newAmobile.setAttribute("href", "messages?userid=" + idx);}
             if ((idx == url.get('userid') && !isChat)
                 || (idx == url.get('chatid') && isChat))
             {
                 newA.className = 'list-group-item list-group-item-action\
                     active py-3 lh-tight';
                 newA.setAttribute("aria-current", "true");
+                newAmobile.className = 'list-group-item list-group-item-action\
+                    active py-3 lh-tight';
+                newAmobile.setAttribute("aria-current", "true");
             }
             else {
+                newAmobile.className = 'list-group-item\
+                    list-group-item-action py-3 lh-tight';
+                newAmobile.className = 'list-group-item\
+                    list-group-item-action py-3 lh-tight';
                 newA.className = 'list-group-item\
                     list-group-item-action py-3 lh-tight';
+                 newA.className = 'list-group-item\
+                    list-group-item-action py-3 lh-tight';
             }
-            if(isChat)
+            if(isChat){
                 newA.id = 'chat' + idx;
-            else
+                newA.id = 'chat' + idx;
+                newAmobile.id = 'chatmobile' + idx;
+                newAmobile.id = 'chatmobile' + idx;}
+            else{
                 newA.id = 'user' + idx;
+                newAmobile.id = 'usermobile' + idx;}
             output.append(newA);
+            output_mobile.append(newAmobile);
+
+
+
         }
         /* Обновляем сообщение */
         newA.innerHTML ='<div class="d-flex w-100\
+            align-items-center justify-content-between"><strong class="mb-1">'
+            + login + '</strong><small>' + time
+            + '</small></div><div class="col-10 mb-1 small">'
+            + message + '</div>';
+        newAmobile.innerHTML ='<div class="d-flex w-100\
             align-items-center justify-content-between"><strong class="mb-1">'
             + login + '</strong><small>' + time
             + '</small></div><div class="col-10 mb-1 small">'
