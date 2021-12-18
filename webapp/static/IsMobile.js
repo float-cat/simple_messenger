@@ -5,10 +5,10 @@ let isMobile = window.innerWidth <= 760;
 
 function moveNewPlace(newPlaceName)
 {
-        let floatObject = document.getElementById('floatObject');
-        floatObject.parentNode.removeChild(floatObject);
-        let newPlace = document.getElementById(newPlaceName);
-        newPlace.appendChild(floatObject);
+    let floatObject = document.getElementById('floatObject');
+    floatObject.parentNode.removeChild(floatObject);
+    let newPlace = document.getElementById(newPlaceName);
+    newPlace.appendChild(floatObject);
 }
 
 function swapMobile()
