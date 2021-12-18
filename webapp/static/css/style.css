@@ -12,7 +12,7 @@
 }
 
 @media (max-width: 760px) {
-    .perepis {
+    .pmlist {
         display:none !important;
     }
 }
