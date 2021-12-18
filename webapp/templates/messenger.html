@@ -1,6 +1,6 @@
 ﻿{% extends "base.html" %}  
 {% block navbar %}
-<script type="text/javascript" src="/static/IsMobile.js"></script>
+<div class="container-fluid vh-100">
 <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary fixed-top">
    <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="#">
@@ -42,10 +42,12 @@
 </nav>
 {% endblock %}
 {% block content %}
-<div class="container-fluid main_bg auth">
-<div class="row ">
-   <div class="col-sm-12 col-md-8 col-lg-8 bg-light ">
-      <br>
+<div class="container-fluid main_bg auth h-100">
+<div class="row h-100">
+   <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
+
+         <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
+		       <br>
       {% if toUserId %}
       <form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
       <input name="typeRequest" style="display: none;">
@@ -91,11 +93,29 @@
             {% endif %}
             <br>
          </div>
-         <div class='bg-white min-vh-100 border rounded' id="receiveDiv"> </div>
       </div>
-      <div id="outputPlace1" class="bg-white col-4 pmlist">
-      	<div id="floatObject">
-         <div class="list-group list-group-flush border-bottom scrollarea" id="messagesAllOutput">
+      <div id="outputPlace1" class="bg-white col-4 perepis scrollbar h-75">
+	  <div id="floatObject">
+         <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
+		 <br />
+		 <div class="accordion accordion-flush" id="accordionFlushExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+        Создать групповую переписку
+      </button>
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body"><form name="newgm">
+               <div class="input-group mb-3 ">
+                  <button class="btn btn-primary" type="button" value="Создать"
+                        onclick="msg.createNewGM(this.form)">Создать</button>
+                  <input type="text" class="form-control" placeholder="Введите название беседы" name="caption">
+               </div></div>
+    </div>
+  </div>
+  </div>
+		
             <br>
          </div>
          <br>
@@ -107,8 +127,8 @@
                </div>
                <ul class="list-group" id="outputUsers"></ul>
             </form>
+		 </div>
          </div>
-        </div>
       </div>
    </div>
 </div>
@@ -132,13 +152,18 @@
    );
 </script>
 {% endif %}
+<script type="text/javascript" src="/static/MessagesAjax.js"></script>
+<script type="text/javascript" src="/static/IsMobile"></script>
+
 <script type="text/javascript" src="/static/addsmile.js"></script>
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
    <div class="offcanvas-header">
       <h5 id="offcanvasRightLabel">Диалоги и поиск</h5>
-      <button id="closeBtn" type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
    </div>
-   <div id="outputPlace2" class="offcanvas-body">
+   <div class="offcanvas-body" id="outputPlace2">
+     
+	</div>
    </div>
 </div>
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
@@ -176,4 +201,7 @@
       </p>
    </div>
 </div>
+
+</div>
+<script type="text/javascript" src="/static/SearchUsersAjax.js"></script>
 {% endblock %}
