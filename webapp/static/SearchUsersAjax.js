@@ -14,7 +14,7 @@ searchUsers = {
         if (url.get('chatid'))
             newLi.innerHTML = ' <input type="button" value="+" \
                 onclick="searchUsers.append(this.parentNode, '
-                + url.get('chatid') + ')"></input>' + newLi.innerHTML;
+                + url.get('chatid') + ')"></input>' + '&nbsp;&nbsp;' + newLi.innerHTML;
     },
 
     async setFindUsers(result)
