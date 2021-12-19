@@ -1,16 +1,16 @@
 .paddingmessage{
-padding-top: 7.5px !important;
-padding-bottom: 2.5px !important;
+    padding-top: 7.5px !important;
+    padding-bottom: 2.5px !important;
 }
 .main-window{
-background: url('/static/img/background.png');
+    background: url('/static/img/background.png');
 }
 .vh-100{
-overflow: hidden;
+    overflow: hidden;
 }
 
 .scrollbar{
-overflow-y: auto;
+    overflow-y: auto;
 }
 
 .auth {
