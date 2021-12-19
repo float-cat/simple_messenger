@@ -14,13 +14,13 @@ msg = {
         if (isOwner == 1){
             newDiv.innerHTML = '<div class="row justify-content-start">\
                 <div class=" col col-11 col-sm-11 col-md-8\
-                col-lg-6 alert alert-primary "\
+                col-lg-6 alert alert-primary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
                 + '<p>' + message +'</p></div></div>';}
         else{
             newDiv.innerHTML = '<div class="row justify-content-end">\
                 <div class=" col-11 col-sm-11 col-md-8\
-                col-lg-6 col alert alert-secondary "\
+                col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
                 + '<p>' + message +'</p></div></div>';}
 
