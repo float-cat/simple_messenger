@@ -10,7 +10,7 @@ overflow: hidden;
 }
 
 .scrollbar{
-overflow-y: scroll;
+overflow-y: auto;
 }
 
 .auth {

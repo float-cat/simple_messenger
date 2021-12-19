@@ -8,7 +8,6 @@ from webapp.modules.MessagesPage import MessagesPage
 from webapp.modules.AuthPage import AuthPage
 from webapp.modules.RegisterPage import RegisterPage
 from webapp.modules.LogoutPage import LogoutPage
-from webapp.modules.NewGroupMessagesPage import NewGroupMessagesPage
 from webapp.handlers.MessagesHandler import MessagesHandler
 from webapp.handlers.SearchUsersHandler import SearchUsersHandler
 from webapp.handlers.RegisterHandler import RegisterHandler
