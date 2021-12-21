@@ -1,4 +1,5 @@
 msg = {
+    prevCount: -1,
     lastId: 0,
     delta: 0,
 
@@ -83,6 +84,8 @@ msg = {
         let newLastId = parseInt(result['lastid']);
         msg.delta = newLastId - msg.lastId;
         msg.lastId = newLastId;
+        if (msg.prevCount < 0)
+            msg.prevCount = parseInt(result['prevcount']);
         for(let idx = 0; idx < result['count']; idx++)
         {
             msg.setPM(
