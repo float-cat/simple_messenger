@@ -12,6 +12,7 @@ def AuthPage():
     else:
         return render_template(
             'auth.html',
+            uth_validate=current_user.is_authenticated,
             page_title=title,
             form=auth_forms
         )

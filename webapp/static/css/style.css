@@ -30,6 +30,9 @@
     .perepis {
         display:none !important;
     }
+ .main-send {
+        display:none !important;
+    }
 }
 @media (min-width: 760px) { 
     .dialogs-button {
