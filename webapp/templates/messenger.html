@@ -1,205 +1,238 @@
 ﻿{% extends "base.html" %}  
 {% block navbar %}
 <div class="container-fluid vh-100">
-<nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary fixed-top">
-   <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#">
-         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-dots" viewBox="0 0 16 16">
-            <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
-            <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-         </svg>
-         Simple Messenger
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-               <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
-            </li>
-            <li class="nav-item dropdown">
-               <a class="nav-link fw-bolder dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-               Выпадающий список
-               </a>
-               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Опция 1</a></li>
-                  <li><a class="dropdown-item" href="#">Опция 2</a></li>
-                  <li><a class="dropdown-item" href="#">Опция 3</a></li>
-               </ul>
-            </li>
-         </ul>
-         <span class="navbar-text">
-         Привет {{ user_name}}
-         &nbsp;	
-         &nbsp; <a href="{{ url_for("logout") }}">{{ form.exit() }}</a>
-         </span>
-      </div>
-   </div>
-</nav>
-{% endblock %}
-{% block content %}
-<div class="container-fluid main_bg auth h-100">
-<div class="row h-100">
-   <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
-
-         <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
-		       <br>
-      {% if toUserId %}
-      <form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
-      <input name="typeRequest" style="display: none;">
-      </input>
-      <input name="newMessageTmp" style="display: none;">
-      </input>
-      <input name="toUserId" value="{{ toUserId }}" style="display: none;">
-      </input>
-      <input name="lastId" value="0" style="display: none;">
-      </input>
-      <div class="input-group mb-3 ">
-         <button class="btn btn-primary" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">Отправить</button>
-         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-               <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
+   <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary fixed-top">
+      <div class="container-fluid">
+         <a class="navbar-brand fw-bold" href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-dots" viewBox="0 0 16 16">
+               <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
+               <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
             </svg>
+            Simple Messenger
+         </a>
+         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
          </button>
-           <button class="btn btn-primary dialogs-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                  <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                  <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
-               </svg>
-            </button>
-         {{ form.newMessage() }}
-         </form>
-         {% else %}
-         <div class="input-group mb-3 ">
-            {{ form.submit() }}
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
-               </svg>
-            </button>
-            <button class="btn btn-primary dialogs-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                  <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                  <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
-               </svg>
-            </button>
-            {{ form.newMessage() }}
-            {% endif %}
-            <br>
+         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+               <li class="nav-item">
+                  <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
+               </li>
+               <li class="nav-item dropdown">
+                  <a class="nav-link fw-bolder dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Выпадающий список
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                     <li><a class="dropdown-item" href="#">Опция 1</a></li>
+                     <li><a class="dropdown-item" href="#">Опция 2</a></li>
+                     <li><a class="dropdown-item" href="#">Опция 3</a></li>
+                  </ul>
+               </li>
+            </ul>
+            <span class="navbar-text">
+            Привет {{ user_name}}
+            &nbsp;	
+            &nbsp; <a href="{{ url_for("logout") }}">{{ form.exit() }}</a>
+            </span>
          </div>
       </div>
-      <div id="outputPlace1" class="bg-white col-4 perepis scrollbar h-75">
-	  <div id="floatObject">
-         <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
-		 <br />
-		 <div class="accordion accordion-flush border" id="accordionFlushExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingOne">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-        Создать групповую переписку
-      </button>
-    </h2>
-    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-      <div class="accordion-body"><form name="newgm">
-               <div class="input-group mb-3 ">
-                  <button class="btn btn-primary" type="button" value="Создать"
-                        onclick="msg.createNewGM(this.form)">Создать</button>
-                  <input type="text" class="form-control" placeholder="Введите название беседы" name="caption">
-               </div></div>
-    </div>
-  </div>
-  </div>
-		
+   </nav>
+   {% endblock %}
+   {% block content %}
+   <div class="container-fluid main_bg auth h-100">
+      <div class="row h-100">
+         <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
+            <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
             <br>
-         </div>
-         <br>
-         <div>
-            <form name="searchUsersForm">
+            {% if toUserId %}
+            <form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
+            <input name="typeRequest" style="display: none;">
+            </input>
+            <input name="newMessageTmp" style="display: none;">
+            </input>
+            <input name="toUserId" value="{{ toUserId }}" style="display: none;">
+            </input>
+            <input name="lastId" value="0" style="display: none;">
+            </input>
+            <div class="input-group mb-3 ">
+               <button class="btn btn-primary main-send" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">Отправить</button>
+               <button class="btn btn-primary" id="button-smile" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+                  <a href="##" class="smile">😃</a>
+                  <a href="##" class="smile">😁</a>
+                  <a href="##" class="smile">😂</a>
+                  <a href="##" class="smile">😄</a>
+                  <a href="##" class="smile">😅</a>
+                  <a href="##" class="smile">😆</a>
+                  <a href="##" class="smile">😉</a>
+                  <a href="##" class="smile">😍</a>
+                  <a href="##" class="smile">😜</a><br />
+                  <a href="##" class="smile">😘</a>
+                  <a href="##" class="smile">😷</a>
+                  <a href="##" class="smile">😸</a>
+                  <a href="##" class="smile">😹</a>
+                  <a href="##" class="smile">🙅</a>
+                  <a href="##" class="smile">🙆</a>
+                  <a href="##" class="smile">🙇</a>
+                  <a href="##" class="smile">🙋</a>
+                  <a href="##" class="smile">🙌</a>
+                  <a href="##" class="smile">🙍</a><br />
+                  <a href="##" class="smile">🙈</a>
+                  <a href="##" class="smile">🙉</a>
+                  <a href="##" class="smile">🙊</a>
+                  <a href="##" class="smile">🚧</a>
+                  <a href="##" class="smile">🚩</a>
+                  <a href="##" class="smile">🚫</a>
+                  <a href="##" class="smile">🌂</a>
+                  <a href="##" class="smile">🌋</a>
+                  <a href="##" class="smile">🌏</a>
+                  <a href="##" class="smile">🎁</a>
+                  '>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                     <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
+                  </svg>
+               </button>
+               <button class="btn btn-primary dialogs-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                     <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
+                  </svg>
+               </button>
+               {{ form.newMessage() }}
+               <button class="btn btn-primary dialogs-button" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-square" viewBox="0 0 16 16">
+                     <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                  </svg>
+               </button>
+               </form>
+               {% else %}
                <div class="input-group mb-3 ">
+                  {{ form.submit() }}
+                  <button class="btn btn-primary" id="button-smile" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+                     <a href="##" class="smile">😃</a>
+                     <a href="##" class="smile">😁</a>
+                     <a href="##" class="smile">😂</a>
+                     <a href="##" class="smile">😄</a>
+                     <a href="##" class="smile">😅</a>
+                     <a href="##" class="smile">😆</a>
+                     <a href="##" class="smile">😉</a>
+                     <a href="##" class="smile">😍</a>
+                     <a href="##" class="smile">😜</a><br />
+                     <a href="##" class="smile">😘</a>
+                     <a href="##" class="smile">😷</a>
+                     <a href="##" class="smile">😸</a>
+                     <a href="##" class="smile">😹</a>
+                     <a href="##" class="smile">🙅</a>
+                     <a href="##" class="smile">🙆</a>
+                     <a href="##" class="smile">🙇</a>
+                     <a href="##" class="smile">🙋</a>
+                     <a href="##" class="smile">🙌</a>
+                     <a href="##" class="smile">🙍</a><br />
+                     <a href="##" class="smile">🙈</a>
+                     <a href="##" class="smile">🙉</a>
+                     <a href="##" class="smile">🙊</a>
+                     <a href="##" class="smile">🚧</a>
+                     <a href="##" class="smile">🚩</a>
+                     <a href="##" class="smile">🚫</a>
+                     <a href="##" class="smile">🌂</a>
+                     <a href="##" class="smile">🌋</a>
+                     <a href="##" class="smile">🌏</a>
+                     <a href="##" class="smile">🎁</a>
+                     '>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
+                     </svg>
+                  </button>
+                  <button class="btn btn-primary dialogs-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                        <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
+                     </svg>
+                  </button>
+                  {{ form.newMessage() }}
+                  <button class="btn btn-primary dialogs-button" type="button">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-square" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                     </svg>
+                  </button>
+                  {% endif %}
+                  <br>
+               </div>
+            </div>
+            <div id="outputPlace1" class="bg-white col-4 perepis scrollbar h-75">
+               <div id="floatObject">
+                  <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
+                     <br />
+                     <div class="accordion accordion-flush border" id="accordionFlushExample">
+                        <div class="accordion-item">
+                           <h2 class="accordion-header" id="flush-headingOne">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                              Создать групповую переписку
+                              </button>
+                           </h2>
+                           <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                              <div class="accordion-body">
+                                 <form name="newgm">
+                                    <div class="input-group mb-3 ">
+                                       <button class="btn btn-primary" type="button" value="Создать"
+                                          onclick="msg.createNewGM(this.form)">Создать</button>
+                                       <input type="text" class="form-control" placeholder="Введите название беседы" name="caption">
+                                    </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <br>
+                  </div>
+                  <br>
+                  <div>
+                  <form name="searchUsersForm">
+                  <div class="input-group mb-3 ">
                   <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
                   <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
+                  </div>
+                  <ul class="list-group" id="outputUsers"></ul>
+                  </form>
+                  </div>
                </div>
-               <ul class="list-group" id="outputUsers"></ul>
-            </form>
-		 </div>
+            </div>
          </div>
+      </div>
+      <script type="text/javascript" src="/static/js/MessagesAjax.js"></script>
+      <form name="allPMInfo">
+         <input name="typeRequest" style="display: none;"
+            value="allPMInfo">
+         </input>
+      </form>
+      <script type="text/javascript">
+         setInterval(
+          () => msg.updateAllPM(document.forms['allPMInfo']),
+          2000
+         );
+      </script>
+      {% if toUserId %}
+      <script type="text/javascript">
+         setInterval(
+          () => msg.update(document.forms['sendForm']),
+          2000
+         );
+      </script>
+      {% endif %}
+      <script type="text/javascript" src="/static/js/IsMobile.js"></script>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+         <div class="offcanvas-header">
+            <h5 id="offcanvasRightLabel">Диалоги и поиск</h5>
+            <button id="closeBtn" type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+         </div>
+         <div class="offcanvas-body" id="outputPlace2"></div>
       </div>
    </div>
 </div>
-<script type="text/javascript" src="/static/js/MessagesAjax.js"></script>
-<form name="allPMInfo">
-   <input name="typeRequest" style="display: none;"
-      value="allPMInfo">
-   </input>
-</form>
-<script type="text/javascript">
-   setInterval(
-    () => msg.updateAllPM(document.forms['allPMInfo']),
-    2000
-   );
-</script>
-{% if toUserId %}
-<script type="text/javascript">
-   setInterval(
-    () => msg.update(document.forms['sendForm']),
-    2000
-   );
-</script>
-{% endif %}
-<script type="text/javascript" src="/static/js/IsMobile.js"></script>
 
-<script type="text/javascript" src="/static/js/addsmile.js"></script>
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-   <div class="offcanvas-header">
-      <h5 id="offcanvasRightLabel">Диалоги и поиск</h5>
-      <button id="closeBtn" type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
-   </div>
-   <div class="offcanvas-body" id="outputPlace2"></div>
-   </div>
-</div>
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
-   <div class="offcanvas-body small">
-      <p class="h4  text-center"><a href="##" class="smile" onclick="addsmile('🚀')">🚀</a>
-         <a href="##" class="smile" onclick="addsmile('😃')">😃</a>
-         <a href="##" class="smile" onclick="addsmile('😁')">😁</a>
-         <a href="##" class="smile" onclick="addsmile('😂')">😂</a>
-         <a href="##" class="smile" onclick="addsmile('😄')">😄</a>
-         <a href="##" class="smile" onclick="addsmile('😅')">😅</a>
-         <a href="##" class="smile" onclick="addsmile('😆')">😆</a>
-         <a href="##" class="smile" onclick="addsmile('😉')">😉</a>
-         <a href="##" class="smile" onclick="addsmile('😍')">😍</a>
-         <a href="##" class="smile" onclick="addsmile('😜')">😜</a><br />
-         <a href="##" class="smile" onclick="addsmile('😘')">😘</a>
-         <a href="##" class="smile" onclick="addsmile('😷')">😷</a>
-         <a href="##" class="smile" onclick="addsmile('😸')">😸</a>
-         <a href="##" class="smile" onclick="addsmile('😹')">😹</a>
-         <a href="##" class="smile" onclick="addsmile('🙅')">🙅</a>
-         <a href="##" class="smile" onclick="addsmile('🙆')">🙆</a>
-         <a href="##" class="smile" onclick="addsmile('🙇')">🙇</a>
-         <a href="##" class="smile" onclick="addsmile('🙋')">🙋</a>
-         <a href="##" class="smile" onclick="addsmile('🙌')">🙌</a>
-         <a href="##" class="smile" onclick="addsmile('🙍')">🙍</a><br />
-         <a href="##" class="smile" onclick="addsmile('🙈')">🙈</a>
-         <a href="##" class="smile" onclick="addsmile('🙉')">🙉</a>
-         <a href="##" class="smile" onclick="addsmile('🙊')">🙊</a>
-         <a href="##" class="smile" onclick="addsmile('🚧')">🚧</a>
-         <a href="##" class="smile" onclick="addsmile('🚩')">🚩</a>
-         <a href="##" class="smile" onclick="addsmile('🚫')">🚫</a>
-         <a href="##" class="smile" onclick="addsmile('🌂')">🌂</a>
-         <a href="##" class="smile" onclick="addsmile('🌋')">🌋</a>
-         <a href="##" class="smile" onclick="addsmile('🌏')">🌏</a>
-         <a href="##" class="smile" onclick="addsmile('🎁')">🎁</a>
-      </p>
-   </div>
-</div>
-
-</div>
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
+<script type="text/javascript" src="/static/tooltipsSmile.js"></script>
 {% endblock %}
-

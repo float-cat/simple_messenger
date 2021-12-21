@@ -18,6 +18,6 @@ class simple_messenger_reg(FlaskForm):
 
 class simple_messenger_messages(FlaskForm):
     newMessage = StringField('Сообщение', validators=[DataRequired()], render_kw={"class": "form-control", "placeholder": "Введите сообщение"})
-    submit = SubmitField('Отправить', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('Отправить', render_kw={"class": "btn btn-primary main-send"})
     exit = SubmitField('Выход', render_kw={"class": "btn btn-light", "placeholder": "Введите сообщение"})
 
