@@ -11,6 +11,7 @@ def RegisterPage():
     else:
         return render_template(
             'reg_user.html',
+            uth_validate=current_user.is_authenticated,
             page_title=title,
             form=auth_forms
         )
