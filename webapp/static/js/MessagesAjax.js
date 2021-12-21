@@ -1,5 +1,6 @@
 msg = {
     lastId: 0,
+    delta: 0,
 
     /* Метод добавляет новое сообщение в чат */
     async setPM(idx, login, message, time, isOwner)
@@ -79,7 +80,9 @@ msg = {
 
     async setNewPM(result)
     {
-        msg.lastId = parseInt(result['lastid']);
+        let newLastId = parseInt(result['lastid']);
+        msg.delta = newLastId - msg.lastId;
+        msg.lastId = newLastId;
         for(let idx = 0; idx < result['count']; idx++)
         {
             msg.setPM(
@@ -146,6 +149,12 @@ msg = {
         });
     },
 
+    /* Метод, загружающий предыдущие сообщения */
+    async scroll(form, toUserId)
+    {
+        /* :D */
+    },
+
     /* Метод, обновляющий сообщения */
     async update(form, toUserId)
     {
@@ -163,8 +172,19 @@ msg = {
         /* Получаем результат */
         let result = await response.json();
 
+        /* Запоминаем было уже обновление сообщений или нет */
+        let started = (msg.lastId == 0);
+
         /* Ставим новые сообщения */
         msg.setNewPM(result);
+
+        /* Если прибыли новые сообщения */
+        if(msg.delta > 0 || started)
+        {
+            /* Прокручиваем прокрутку */
+            let obj = document.getElementById('receiveDiv');
+            obj.scrollTo(0, obj.scrollHeight);
+        }
     },
 
     /* Метод, обновляющий статус переписок */
@@ -186,4 +206,3 @@ msg = {
         msg.setAllPM(result);
     }
 };
-
