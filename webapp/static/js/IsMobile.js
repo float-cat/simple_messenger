@@ -38,5 +38,7 @@ function isMobileLoad()
 
 window.onresize = swapMobile;
 
-if(isMobile)
-    document.body.onload = isMobileLoad;
+document.addEventListener("DOMContentLoaded", () => {
+    if(isMobile)
+        isMobileLoad();
+});

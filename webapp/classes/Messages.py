@@ -4,6 +4,9 @@ import json
 from sqlalchemy.orm import sessionmaker, scoped_session
 import datetime
 
+# Константы, не должны меняться
+MAX_BLOCK_COUNT = 10
+
 class Messages(object):
     """Класс Message управляет пересылкой сообщений
     """
@@ -62,6 +65,8 @@ class Messages(object):
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
+        prevCount = -1
+        prevOffset = ''
         result = 0
         isChat = False
         lastId = html.escape(lastId)
@@ -77,6 +82,27 @@ class Messages(object):
                 jsonString = json.dumps(resultDict)
                 return jsonString
         if isChat:
+            # Признак первой загрузки - 0
+            if int(lastId) == 0:
+                # Получаем количество всех сообщений в этом чате
+                result = self.session.execute(
+                    f"""SELECT COUNT(*)
+                        FROM ChatMessages
+                        JOIN Users
+                            ON fromUserId = Users.id
+                        WHERE toChatId = {userId}"""
+                )
+                row = result.fetchone()
+                countOfMessages = int(row[0])
+                # Если сообщений больше чем в блоке
+                if countOfMessages > MAX_BLOCK_COUNT:
+                    # Оставляем сообщения, которые не влезли
+                    prevCount = countOfMessages - MAX_BLOCK_COUNT
+                else:
+                    # Иначе предыдущих сообщений нет
+                    prevCount = 0
+                prevOffset = 'LIMIT ' + str(MAX_BLOCK_COUNT) + \
+                    ' OFFSET ' + str(prevCount)
             result = self.session.execute(
                 f"""SELECT ChatMessages.id, login, message, sendDate,
                         fromUserId
@@ -84,9 +110,39 @@ class Messages(object):
                     JOIN Users
                         ON fromUserId = Users.id
                     WHERE ChatMessages.id >  {lastId}
-                        AND toChatId = {userId}"""
+                        AND toChatId = {userId}
+                    {prevOffset}
+                    """
             )
         else:
+            # Признак первой загрузки - -1
+            if int(lastId) == 0:
+                # Получаем количество всех сообщений в этом чате
+                result = self.session.execute(
+                    f"""SELECT COUNT(*)
+                        FROM Users
+                        JOIN Messages
+                            ON Users.id == Messages.fromUserId
+                        WHERE (
+                                Messages.fromUserId = {self.fromUserId}
+                                AND Messages.toUserId = {userId}
+                            )
+                            OR (
+                                Messages.fromUserId = {userId}
+                                AND Messages.toUserId = {self.fromUserId}
+                            )"""
+                )
+                row = result.fetchone()
+                countOfMessages = int(row[0])
+                # Если сообщений больше чем в блоке
+                if countOfMessages > MAX_BLOCK_COUNT:
+                    # Оставляем сообщения, которые не влезли
+                    prevCount = countOfMessages - MAX_BLOCK_COUNT
+                else:
+                    # Иначе предыдущих сообщений нет
+                    prevCount = 0
+                prevOffset = 'LIMIT ' + str(MAX_BLOCK_COUNT) + \
+                    ' OFFSET ' + str(prevCount)
             result = self.session.execute(
                 f"""SELECT Messages.id, login, message, sendDate, fromUserId
                     FROM Users
@@ -101,8 +157,10 @@ class Messages(object):
                                 Messages.fromUserId = {userId}
                                 AND Messages.toUserId = {self.fromUserId}
                             )
-                        )"""
+                        )
+                    {prevOffset}"""
             )
+        # DBG! Требуется рефакторинг
         # Объявляем словарь для формирования ответа
         #  Структура ответа
         #    {
@@ -139,6 +197,108 @@ class Messages(object):
             resultDict[row[0]]['isOwner'] = int(self.fromUserId == str(row[4]))
             lastId = str(row[0])
         resultDict['lastid'] = lastId
+        if prevCount >= 0:
+            resultDict['prevcount'] = prevCount
+        jsonString = json.dumps(resultDict)
+        return jsonString
+
+    def loadPrevMessages(self, userId, prevCount):
+        prevOffset = ''
+        result = 0
+        isChat = False
+        prevCount = html.escape(prevCount)
+        prevPrevCount = prevCount
+        prevCount = int(prevCount) - MAX_BLOCK_COUNT
+        if prevCount < 0:
+            prevCount = 0
+        userId = html.escape(userId)
+        # Если признак группового чата
+        if userId[0] == 'c':
+            isChat = True
+            userId = userId[1:]
+            # Если нет доступа к групповому чату
+            if not self.granted(userId):
+                resultDict = {}                
+                resultDict['error'] = 'Not Granted!'
+                resultDict['prevcount'] = 0
+                jsonString = json.dumps(resultDict)
+                return jsonString
+        if isChat:
+            # Если осталось больше одного блока
+            if int(prevCount) > 0:
+                prevOffset = 'LIMIT ' + str(MAX_BLOCK_COUNT) + \
+                    ' OFFSET ' + str(prevCount)
+            # Иначе - последний блок
+            else:
+                prevOffset = 'LIMIT ' + str(prevPrevCount)
+            result = self.session.execute(
+                f"""SELECT ChatMessages.id, login, message, sendDate,
+                        fromUserId
+                    FROM ChatMessages
+                    JOIN Users
+                        ON fromUserId = Users.id
+                    WHERE toChatId = {userId}
+                    {prevOffset}
+                    """
+            )
+        else:
+            # Если осталось больше одного блока
+            if int(prevCount) > 0:
+                prevOffset = 'LIMIT ' + str(MAX_BLOCK_COUNT) + \
+                    ' OFFSET ' + str(prevCount)
+            # Иначе - последний блок
+            else:
+                prevOffset = 'LIMIT ' + str(prevPrevCount)
+            result = self.session.execute(
+                f"""SELECT Messages.id, login, message, sendDate, fromUserId
+                    FROM Users
+                    JOIN Messages
+                        ON Users.id == Messages.fromUserId
+                    WHERE (
+                            Messages.fromUserId = {self.fromUserId}
+                            AND Messages.toUserId = {userId}
+                        )
+                        OR (
+                            Messages.fromUserId = {userId}
+                            AND Messages.toUserId = {self.fromUserId}
+                        )
+                    {prevOffset}"""
+            )
+        # DBG! Требуется рефакторинг
+        # Объявляем словарь для формирования ответа
+        #  Структура ответа
+        #    {
+        #        "prevcount": <prevcount>,
+        #        "count": <count>,
+        #        "msgids":
+        #        {
+        #            "0": <id1>
+        #            ...
+        #        },
+        #        "id1":
+        #        {
+        #            "login": <login1>,
+        #            "message": <message1>
+        #            "time": <time1>
+        #            "isOwner": <isOwner1>
+        #        }
+        #        ...
+        #    }
+        resultDict = {}
+        resultDict['count'] = 0
+        resultDict['msgids'] = {}
+        for row in result:
+            resultDict['msgids'][resultDict['count']] = int(row[0])
+            resultDict['count'] += 1
+            resultDict[row[0]] = {}
+            resultDict[row[0]]['login'] = row[1]
+            resultDict[row[0]]['message'] = row[2]
+            if row[3]:
+                resultDict[row[0]]['time'] = self.formatTime(row[3])
+            else:
+                resultDict[row[0]]['time'] = '--:--'
+            resultDict[row[0]]['isOwner'] = int(self.fromUserId == str(row[4]))
+        resultDict['prevcount'] = prevCount
         jsonString = json.dumps(resultDict)
         return jsonString
 

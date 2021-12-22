@@ -1,28 +1,48 @@
 msg = {
+    touid: 0,
+    prevCount: -1,
     lastId: 0,
+    delta: 0,
+
+    async loadByScroll(form)
+    {
+        elem = document.getElementById('receiveDiv');
+        elem.addEventListener('scroll', function() {
+            if(elem.scrollTop < 20 && msg.prevCount > 0)
+            {
+                /* Прокручиваем прокрутку */
+                let obj = document.getElementById('receiveDiv');
+                obj.scrollTo(0, 25);
+                msg.loadPrevMessages(form);
+            }
+        })
+    },
 
     /* Метод добавляет новое сообщение в чат */
-    async setPM(idx, login, message, time, isOwner)
+    async setPM(idx, login, message, time, isOwner, isNew)
     {
         output = document.getElementById('receiveDiv');
         /* Проверяем есть ли такая переписка */
         /* Если нет, то создаем новую */
         newDiv = document.createElement('div');
         newDiv.id = 'message' + idx;
-        output.append(newDiv);
+        if(isNew)
+            output.append(newDiv);
+        else
+            output.prepend(newDiv);
         /* Обновляем сообщение */
         if (isOwner == 1){
             newDiv.innerHTML = '<div class="row justify-content-start">\
                 <div class=" col col-11 col-sm-11 col-md-8\
                 col-lg-6 alert alert-primary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
-                + '<p>' + message +'</p></div></div>';}
+                + '<p>' + message + '</p></div></div>';}
         else{
             newDiv.innerHTML = '<div class="row justify-content-end">\
                 <div class=" col-11 col-sm-11 col-md-8\
                 col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
-                + '<p>' + message +'</p></div></div>';}
+                + '<p>' + message + '</p></div></div>';}
 
 
     },
@@ -79,7 +99,11 @@ msg = {
 
     async setNewPM(result)
     {
-        msg.lastId = parseInt(result['lastid']);
+        let newLastId = parseInt(result['lastid']);
+        msg.delta = newLastId - msg.lastId;
+        msg.lastId = newLastId;
+        if (msg.prevCount < 0)
+            msg.prevCount = parseInt(result['prevcount']);
         for(let idx = 0; idx < result['count']; idx++)
         {
             msg.setPM(
@@ -87,7 +111,24 @@ msg = {
                 result[result['msgids'][idx]]['login'],
                 result[result['msgids'][idx]]['message'],
                 result[result['msgids'][idx]]['time'],
-                result[result['msgids'][idx]]['isOwner']
+                result[result['msgids'][idx]]['isOwner'],
+                true
+            );
+        }
+    },
+
+    async setPrevPM(result)
+    {
+        msg.prevCount = parseInt(result['prevcount']);
+        for(let idx = result['count'] - 1; idx >= 0; idx--)
+        {
+            msg.setPM(
+                result['msgids'][idx],
+                result[result['msgids'][idx]]['login'],
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time'],
+                result[result['msgids'][idx]]['isOwner'],
+                false
             );
         }
     },
@@ -146,9 +187,33 @@ msg = {
         });
     },
 
+    /* Метод, загружающий предыдущие сообщения */
+    async loadPrevMessages(form)
+    {
+        /* Заполняем данные формы */
+        form.typeRequest.value = 'loadPrev';
+        let formData = new FormData(form);
+        formData.append('toUserId', msg.touid);
+        formData.append('prevCount', msg.prevCount);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        msg.setPrevPM(result);
+    },
+
     /* Метод, обновляющий сообщения */
     async update(form, toUserId)
     {
+        /* Сохраняем идентификатор пользователя */
+        msg.touid = toUserId;
         /* Заполняем данные формы */
         form.typeRequest.value = 'update';
         form.lastId.value = msg.lastId.toString();
@@ -163,8 +228,19 @@ msg = {
         /* Получаем результат */
         let result = await response.json();
 
+        /* Запоминаем было уже обновление сообщений или нет */
+        let started = (msg.lastId == 0);
+
         /* Ставим новые сообщения */
         msg.setNewPM(result);
+
+        /* Если прибыли новые сообщения */
+        if(msg.delta > 0 || started)
+        {
+            /* Прокручиваем прокрутку */
+            let obj = document.getElementById('receiveDiv');
+            obj.scrollTo(0, obj.scrollHeight);
+        }
     },
 
     /* Метод, обновляющий статус переписок */
@@ -187,3 +263,6 @@ msg = {
     }
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    msg.loadByScroll(document.forms['sendForm']);
+});
