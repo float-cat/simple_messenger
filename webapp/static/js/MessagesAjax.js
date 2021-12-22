@@ -1,6 +1,7 @@
 msg = {
     touid: 0,
     prevCount: -1,
+    prevPrevCount: 0,
     lastId: 0,
     delta: 0,
 
@@ -8,11 +9,13 @@ msg = {
     {
         elem = document.getElementById('receiveDiv');
         elem.addEventListener('scroll', function() {
-            if(elem.scrollTop < 20 && msg.prevCount > 0)
+            if(elem.scrollTop < 50 && msg.prevCount > 0 
+                && msg.prevCount != msg.prevPrevCount)
             {
+                msg.prevPrevCount = msg.prevCount;
                 /* Прокручиваем прокрутку */
                 let obj = document.getElementById('receiveDiv');
-                obj.scrollTo(0, 25);
+                obj.scrollTo(0, 60);
                 msg.loadPrevMessages(form);
             }
         })
