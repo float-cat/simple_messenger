@@ -4,10 +4,11 @@ msg = {
     prevPrevCount: 0,
     lastId: 0,
     delta: 0,
+    chatCount: 10,
 
     async loadByScroll(form)
     {
-        elem = document.getElementById('receiveDiv');
+        let elem = document.getElementById('receiveDiv');
         elem.addEventListener('scroll', function() {
             if(elem.scrollTop < 50 && msg.prevCount > 0 
                 && msg.prevCount != msg.prevPrevCount)
@@ -17,6 +18,18 @@ msg = {
                 let obj = document.getElementById('receiveDiv');
                 obj.scrollTo(0, 60);
                 msg.loadPrevMessages(form);
+            }
+        })
+    },
+
+    async loadByScrollOfList(form)
+    {
+        let elem = document.getElementById('floatObject');
+        elem.addEventListener('scroll', function() {
+            if(elem.scrollTop + elem.offsetHeight > elem.scrollHeight - 20)
+            {
+                msg.chatCount += 10;
+                msg.updateAllPM(document.forms['allPMInfo'], true)
             }
         })
     },
@@ -90,8 +103,10 @@ msg = {
                 newA.id = 'chat' + idx;
             else
                 newA.id = 'user' + idx;
-            output.append(newA);
         }
+        else
+            newA.parentNode.removeChild(newA);
+        output.prepend(newA);
         /* Обновляем сообщение */
         newA.innerHTML ='<div class="d-flex w-100\
             align-items-center justify-content-between"><strong class="mb-1">'
@@ -247,10 +262,12 @@ msg = {
     },
 
     /* Метод, обновляющий статус переписок */
-    async updateAllPM(form)
+    async updateAllPM(form, isFull)
     {
         /* Заполняем данные формы */
         let formData = new FormData(form);
+        formData.append('isFull', (isFull?'1':'0'));
+        formData.append('count', msg.chatCount.toString());
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -268,4 +285,12 @@ msg = {
 
 document.addEventListener("DOMContentLoaded", () => {
     msg.loadByScroll(document.forms['sendForm']);
+    msg.loadByScrollOfList(document.forms['sendForm']);
+    msg.updateAllPM(document.forms['allPMInfo'], true)
+    setInterval(
+        () => {
+            msg.updateAllPM(document.forms['allPMInfo'], false)
+        },
+        2000
+    );
 });

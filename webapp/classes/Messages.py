@@ -17,7 +17,16 @@ class Messages(object):
         Session = scoped_session(sessionmaker(bind=engine))
         self.session = Session()
 
-    def granted(self, chatId):
+    def updateLastDate(self):
+        today = datetime.datetime.now()
+        result = self.session.execute(
+            f"""UPDATE Users
+                SET lastUpdate = '{today}'
+                WHERE id = {self.fromUserId}"""
+        )
+        self.session.commit()
+
+    def isGranted(self, chatId):
         result = self.session.execute(
             f"""SELECT userId
                 FROM ChatUsers
@@ -75,7 +84,7 @@ class Messages(object):
             isChat = True
             userId = userId[1:]
             # Если нет доступа к групповому чату
-            if not self.granted(userId):
+            if not self.isGranted(userId):
                 resultDict = {}                
                 resultDict['error'] = 'Not Granted!'
                 resultDict['lastid'] = 1
@@ -217,7 +226,7 @@ class Messages(object):
             isChat = True
             userId = userId[1:]
             # Если нет доступа к групповому чату
-            if not self.granted(userId):
+            if not self.isGranted(userId):
                 resultDict = {}                
                 resultDict['error'] = 'Not Granted!'
                 resultDict['prevcount'] = 0
@@ -302,7 +311,10 @@ class Messages(object):
         jsonString = json.dumps(resultDict)
         return jsonString
 
-    def getAllPMInfo(self):
+    def getAllPMInfo(self, isFull, listCount):
+        isPartQuery = ''
+        if not isFull:
+            isPartQuery = ' AND sendDate > lastUpdate'
         # Получаем последние сообщение в переписке с каждым пользователем
         result = self.session.execute(
             f"""SELECT fromUserId, login, login, Messages.id,
@@ -317,6 +329,7 @@ class Messages(object):
                         WHERE toUserId = {self.fromUserId}
                         GROUP BY fromUserId
                     )
+                    {isPartQuery}
                 UNION
                 SELECT toUserId, login, login, Messages.id,
                     message, sendDate, fromUserId
@@ -325,9 +338,12 @@ class Messages(object):
                     ON Users.id = toUserId
                 WHERE fromUserId = {self.fromUserId}
                     AND Messages.id IN (
-                        SELECT MAX(id)
+                        SELECT MAX(Messages.id)
                         FROM Messages
+                        JOIN Users
+                            ON Users.id = fromUserId
                         WHERE fromUserId = {self.fromUserId}
+                            {isPartQuery}
                         GROUP BY toUserId
                     )
                 UNION
@@ -347,7 +363,10 @@ class Messages(object):
                         SELECT MAX(id)
                         FROM ChatMessages
                         GROUP BY toChatId
-                    )"""
+                    )                    
+                    {isPartQuery}
+                ORDER BY sendDate
+                LIMIT {listCount}"""
         )
         # Объявляем словарь для формирования ответа
         #  Структура ответа
@@ -397,6 +416,8 @@ class Messages(object):
                     resultDict[idx]['message'] = row[2] + ': ' + row[4]
                 else:
                     resultDict[idx]['message'] = row[4]
+        if resultDict['count'] > 0:
+            self.updateLastDate()
         jsonString = json.dumps(resultDict)
         return jsonString
 
