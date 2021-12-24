@@ -365,7 +365,7 @@ class Messages(object):
                         GROUP BY toChatId
                     )                    
                     {isPartQuery}
-                ORDER BY sendDate
+                ORDER BY sendDate DESC
                 LIMIT {listCount}"""
         )
         # Объявляем словарь для формирования ответа
@@ -418,6 +418,10 @@ class Messages(object):
                     resultDict[idx]['message'] = row[4]
         if resultDict['count'] > 0:
             self.updateLastDate()
+        if not isFull:
+            resultDict['isnewmessages'] = 1
+        else:
+            resultDict['isnewmessages'] = 0
         jsonString = json.dumps(resultDict)
         return jsonString
 
