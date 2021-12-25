@@ -32,7 +32,9 @@ def MessagesHandler(db):
     # Получение списка диалогов
     # DBG: Надо сделать так, чтобы отправлялись не все, а только новое!
     elif typeRequest == 'allPMInfo':
-        dialogs = msg.getAllPMInfo()
+        isFull = int(request.form.get('isFull'))
+        count = request.form.get('count')
+        dialogs = msg.getAllPMInfo(isFull, count)
         return dialogs
     # Новая групповая переписка
     elif typeRequest == 'newGM':

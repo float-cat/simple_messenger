@@ -163,9 +163,8 @@
                   <br>
                </div>
             </div>
-            <div id="outputPlace1" class="bg-white col-4 perepis scrollbar h-75">
-               <div id="floatObject">
-                  <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
+            <div id="outputPlace1" class="bg-white col-4 perepis">
+               <div id="floatObject" class="scrollbar h-75">
                      <br />
                      <div class="accordion accordion-flush border" id="accordionFlushExample">
                         <div class="accordion-item">
@@ -186,6 +185,8 @@
                            </div>
                         </div>
                      </div>
+
+                  <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
                      <br>
                   </div>
                   <br>
@@ -208,12 +209,6 @@
             value="allPMInfo">
          </input>
       </form>
-      <script type="text/javascript">
-         setInterval(
-          () => msg.updateAllPM(document.forms['allPMInfo']),
-          2000
-         );
-      </script>
       {% if toUserId %}
       <script type="text/javascript">
          setInterval(
@@ -234,5 +229,5 @@
 </div>
 
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
-<script type="text/javascript" src="/static/tooltipsSmile.js"></script>
+<script type="text/javascript" src="/static/js/tooltipsSmile.js"></script>
 {% endblock %}

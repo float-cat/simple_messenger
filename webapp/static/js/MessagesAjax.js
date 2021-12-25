@@ -4,10 +4,12 @@ msg = {
     prevPrevCount: 0,
     lastId: 0,
     delta: 0,
+    chatCount: 10,
+    chatCountLimited: 20,
 
     async loadByScroll(form)
     {
-        elem = document.getElementById('receiveDiv');
+        let elem = document.getElementById('receiveDiv');
         elem.addEventListener('scroll', function() {
             if(elem.scrollTop < 50 && msg.prevCount > 0 
                 && msg.prevCount != msg.prevPrevCount)
@@ -17,6 +19,19 @@ msg = {
                 let obj = document.getElementById('receiveDiv');
                 obj.scrollTo(0, 60);
                 msg.loadPrevMessages(form);
+            }
+        })
+    },
+
+    async loadByScrollOfList(form)
+    {
+        let elem = document.getElementById('floatObject');
+        elem.addEventListener('scroll', function() {
+            if(msg.chatCountLimited >= msg.chatCount &&
+                elem.scrollTop + elem.offsetHeight > elem.scrollHeight - 20)
+            {
+                msg.chatCount += 10;
+                msg.updateAllPM(document.forms['allPMInfo'], true)
             }
         })
     },
@@ -51,7 +66,7 @@ msg = {
     },
 
     /* Метод обновляет или добавляет новую переписку */
-    async setPMInfo(idx, login, message, time)
+    async setPMInfo(idx, login, message, time, isNewMessages)
     {
         let isChat = false;
         output = document.getElementById('messagesAllOutput');
@@ -90,8 +105,13 @@ msg = {
                 newA.id = 'chat' + idx;
             else
                 newA.id = 'user' + idx;
-            output.append(newA);
         }
+        else
+            newA.parentNode.removeChild(newA);
+        if(isNewMessages)
+            output.prepend(newA);
+        else
+            output.append(newA);
         /* Обновляем сообщение */
         newA.innerHTML ='<div class="d-flex w-100\
             align-items-center justify-content-between"><strong class="mb-1">'
@@ -144,9 +164,12 @@ msg = {
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
                 result[result['msgids'][idx]]['message'],
-                result[result['msgids'][idx]]['time']
+                result[result['msgids'][idx]]['time'],
+                result['isnewmessages'] == 1
             );
         }
+        if(result['isnewmessages'] == 0)
+            msg.chatCountLimited = result['count'] + 20;
     },
 
     /* Метод, создающий новую групповую переписку */
@@ -247,10 +270,12 @@ msg = {
     },
 
     /* Метод, обновляющий статус переписок */
-    async updateAllPM(form)
+    async updateAllPM(form, isFull)
     {
         /* Заполняем данные формы */
         let formData = new FormData(form);
+        formData.append('isFull', (isFull?'1':'0'));
+        formData.append('count', msg.chatCount.toString());
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -268,4 +293,12 @@ msg = {
 
 document.addEventListener("DOMContentLoaded", () => {
     msg.loadByScroll(document.forms['sendForm']);
+    msg.loadByScrollOfList(document.forms['sendForm']);
+    msg.updateAllPM(document.forms['allPMInfo'], true)
+    setInterval(
+        () => {
+            msg.updateAllPM(document.forms['allPMInfo'], false)
+        },
+        2000
+    );
 });

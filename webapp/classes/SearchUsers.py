@@ -20,7 +20,8 @@ class SearchUsers(object):
             f"""SELECT id, login
                 FROM Users
                 WHERE login
-                    LIKE '%{userLogin}%'""")
+                    LIKE '%{userLogin}%'
+                LIMIT 50""")
         # Объявляем словарь для формирования ответа
         #  Структура ответа
         #    {
