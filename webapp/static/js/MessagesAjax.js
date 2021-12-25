@@ -25,7 +25,7 @@ msg = {
 
     async loadByScrollOfList(form)
     {
-        let elem = document.getElementById('floatObject');
+        let elem = document.getElementById('messagesAllOutput');
         elem.addEventListener('scroll', function() {
             if(msg.chatCountLimited >= msg.chatCount &&
                 elem.scrollTop + elem.offsetHeight > elem.scrollHeight - 20)

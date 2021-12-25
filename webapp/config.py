@@ -5,6 +5,7 @@ from datetime import timedelta
 print(os.path.abspath(os.path.dirname(__file__)))
 main_dir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(main_dir, '..', 'simple_messenger_database.db')}"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 'seasurf токен (защита от кросс-скриптинга)'
 SECRET_KEY='123132123sfdh234dfgj'
