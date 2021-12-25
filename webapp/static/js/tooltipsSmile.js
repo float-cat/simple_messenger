@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function addsmiles()
     {
         var knop = document.getElementById('newMessage');
-        let smileList = document.getElementsByClassName('smile'));
-        if ((smileList != null) {
+        let smileList = document.getElementsByClassName('smile');
+        if (smileList != null) {
             for (let i = 0; i <= smileList.length - 1; i++) {
                 smileList[i].onclick = () => {
                     knop.value += smileList[i].innerHTML;
