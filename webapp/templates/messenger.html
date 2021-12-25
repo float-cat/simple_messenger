@@ -165,39 +165,45 @@
             </div>
             <div id="outputPlace1" class="bg-white col-4 perepis">
                <div id="floatObject" class="scrollbar h-75">
-                     <br />
-                     <div class="accordion accordion-flush border" id="accordionFlushExample">
-                        <div class="accordion-item">
-                           <h2 class="accordion-header" id="flush-headingOne">
-                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                              Создать групповую переписку
-                              </button>
-                           </h2>
-                           <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                              <div class="accordion-body">
-                                 <form name="newgm">
-                                    <div class="input-group mb-3 ">
-                                       <button class="btn btn-primary" type="button" value="Создать"
-                                          onclick="msg.createNewGM(this.form)">Создать</button>
-                                       <input type="text" class="form-control" placeholder="Введите название беседы" name="caption">
-                                    </div>
-                              </div>
+                  <br />
+                  <div class="accordion accordion-flush border" id="accordionFlushExample">
+                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingOne">
+                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                           Создать групповую переписку
+                           </button>
+                        </h2>
+                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                           <div class="accordion-body">
+                              <form name="newgm">
+                                 <div class="input-group mb-3 ">
+                                    <button class="btn btn-primary" type="button" value="Создать"
+                                       onclick="msg.createNewGM(this.form)">Создать</button>
+                                    <input type="text" class="form-control" placeholder="Введите название беседы" name="caption">
+                                 </div>
                            </div>
                         </div>
+                        <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                        Поиск пользователей
+                        </button>
+                        </h2>
+                        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">   <div>
+                        <form name="searchUsersForm">
+                        <div class="input-group mb-3 ">
+                        <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
+                        <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
+                        </div>
+                        <ul class="list-group" id="outputUsers"></ul>
+                        </form>
+                        </div></div>
+                        </div>
+                        </div>
                      </div>
-
-                  <div class="list-group list-group-flush border-bottom " id="messagesAllOutput">
-                     <br>
                   </div>
-                  <br>
-                  <div>
-                  <form name="searchUsersForm">
-                  <div class="input-group mb-3 ">
-                  <button class="btn btn-primary" type="button" onclick="searchUsers.search(this.form)">Поиск</button>
-                  <input type="text" class="form-control" placeholder="Введите логин пользователя" name="userLogin">
-                  </div>
-                  <ul class="list-group" id="outputUsers"></ul>
-                  </form>
+                  <div class="list-group list-group-flush border-bottom scrollbar h-75" id="messagesAllOutput">
                   </div>
                </div>
             </div>
@@ -227,7 +233,6 @@
       </div>
    </div>
 </div>
-
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
 <script type="text/javascript" src="/static/js/tooltipsSmile.js"></script>
 {% endblock %}

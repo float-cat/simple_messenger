@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let i = 0; i <= smileList.length - 1; i++) {
                 smileList[i].onclick = () => {
                     knop.value += smileList[i].innerHTML;
+                    knop.focus();
                 }
             }
         }
