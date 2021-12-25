@@ -17,6 +17,8 @@ CREATE TABLE Users (
     login NVARCHAR(20) UNIQUE NOT NULL,
     -- В поле пароля хранится хеш md5 пароля
     password VARCHAR(32) NOT NULL
+    -- Время и дата последнего обновления
+    lastUpdate DATE NOT NULL,
 );
 
 -- Таблица личных сообщений пользователей

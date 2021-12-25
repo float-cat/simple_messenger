@@ -26,6 +26,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(60), unique=True, nullable=False)
     login = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    # Время и дата последнего обновления
+    lastUpdate = db.Column(db.DateTime(), default=datetime.utcnow)
     messages = db.relationship('Message',
         primaryjoin='User.id == Message.fromUserId or User.id == Message.toUserId',
         backref='user')

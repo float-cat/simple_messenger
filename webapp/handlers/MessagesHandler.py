@@ -23,10 +23,18 @@ def MessagesHandler(db):
         lastId = request.form.get('lastId')
         messages = msg.getMessagesDelta(lastId, str(toUserId))
         return messages
+    # Подгрузка предыдущих сообщений
+    elif typeRequest == 'loadPrev':
+        toUserId = request.form.get('toUserId')
+        prevCount = request.form.get('prevCount')
+        messages = msg.loadPrevMessages(toUserId, prevCount)
+        return messages
     # Получение списка диалогов
     # DBG: Надо сделать так, чтобы отправлялись не все, а только новое!
     elif typeRequest == 'allPMInfo':
-        dialogs = msg.getAllPMInfo()
+        isFull = int(request.form.get('isFull'))
+        count = request.form.get('count')
+        dialogs = msg.getAllPMInfo(isFull, count)
         return dialogs
     # Новая групповая переписка
     elif typeRequest == 'newGM':

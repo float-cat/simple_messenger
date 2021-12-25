@@ -1,34 +1,72 @@
 msg = {
+    touid: 0,
+    prevCount: -1,
+    prevPrevCount: 0,
     lastId: 0,
+    delta: 0,
+    chatCount: 10,
+    chatCountLimited: 20,
+
+    async loadByScroll(form)
+    {
+        let elem = document.getElementById('receiveDiv');
+        elem.addEventListener('scroll', function() {
+            if(elem.scrollTop < 50 && msg.prevCount > 0 
+                && msg.prevCount != msg.prevPrevCount)
+            {
+                msg.prevPrevCount = msg.prevCount;
+                /* Прокручиваем прокрутку */
+                let obj = document.getElementById('receiveDiv');
+                obj.scrollTo(0, 60);
+                msg.loadPrevMessages(form);
+            }
+        })
+    },
+
+    async loadByScrollOfList(form)
+    {
+        let elem = document.getElementById('messagesAllOutput');
+        elem.addEventListener('scroll', function() {
+            if(msg.chatCountLimited >= msg.chatCount &&
+                elem.scrollTop + elem.offsetHeight > elem.scrollHeight - 20)
+            {
+                msg.chatCount += 10;
+                msg.updateAllPM(document.forms['allPMInfo'], true)
+            }
+        })
+    },
 
     /* Метод добавляет новое сообщение в чат */
-    async setPM(idx, login, message, time, isOwner)
+    async setPM(idx, login, message, time, isOwner, isNew)
     {
         output = document.getElementById('receiveDiv');
         /* Проверяем есть ли такая переписка */
         /* Если нет, то создаем новую */
         newDiv = document.createElement('div');
         newDiv.id = 'message' + idx;
-        output.append(newDiv);
+        if(isNew)
+            output.append(newDiv);
+        else
+            output.prepend(newDiv);
         /* Обновляем сообщение */
         if (isOwner == 1){
             newDiv.innerHTML = '<div class="row justify-content-start">\
                 <div class=" col col-11 col-sm-11 col-md-8\
                 col-lg-6 alert alert-primary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
-                + '<p>' + message +'</p></div></div>';}
+                + '<p>' + message + '</p></div></div>';}
         else{
             newDiv.innerHTML = '<div class="row justify-content-end">\
                 <div class=" col-11 col-sm-11 col-md-8\
                 col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
-                + '<p>' + message +'</p></div></div>';}
+                + '<p>' + message + '</p></div></div>';}
 
 
     },
 
     /* Метод обновляет или добавляет новую переписку */
-    async setPMInfo(idx, login, message, time)
+    async setPMInfo(idx, login, message, time, isNewMessages)
     {
         let isChat = false;
         output = document.getElementById('messagesAllOutput');
@@ -67,8 +105,13 @@ msg = {
                 newA.id = 'chat' + idx;
             else
                 newA.id = 'user' + idx;
-            output.append(newA);
         }
+        else
+            newA.parentNode.removeChild(newA);
+        if(isNewMessages)
+            output.prepend(newA);
+        else
+            output.append(newA);
         /* Обновляем сообщение */
         newA.innerHTML ='<div class="d-flex w-100\
             align-items-center justify-content-between"><strong class="mb-1">'
@@ -79,7 +122,11 @@ msg = {
 
     async setNewPM(result)
     {
-        msg.lastId = parseInt(result['lastid']);
+        let newLastId = parseInt(result['lastid']);
+        msg.delta = newLastId - msg.lastId;
+        msg.lastId = newLastId;
+        if (msg.prevCount < 0)
+            msg.prevCount = parseInt(result['prevcount']);
         for(let idx = 0; idx < result['count']; idx++)
         {
             msg.setPM(
@@ -87,7 +134,24 @@ msg = {
                 result[result['msgids'][idx]]['login'],
                 result[result['msgids'][idx]]['message'],
                 result[result['msgids'][idx]]['time'],
-                result[result['msgids'][idx]]['isOwner']
+                result[result['msgids'][idx]]['isOwner'],
+                true
+            );
+        }
+    },
+
+    async setPrevPM(result)
+    {
+        msg.prevCount = parseInt(result['prevcount']);
+        for(let idx = result['count'] - 1; idx >= 0; idx--)
+        {
+            msg.setPM(
+                result['msgids'][idx],
+                result[result['msgids'][idx]]['login'],
+                result[result['msgids'][idx]]['message'],
+                result[result['msgids'][idx]]['time'],
+                result[result['msgids'][idx]]['isOwner'],
+                false
             );
         }
     },
@@ -100,9 +164,12 @@ msg = {
                 result['msgids'][idx],
                 result[result['msgids'][idx]]['login'],
                 result[result['msgids'][idx]]['message'],
-                result[result['msgids'][idx]]['time']
+                result[result['msgids'][idx]]['time'],
+                result['isnewmessages'] == 1
             );
         }
+        if(result['isnewmessages'] == 0)
+            msg.chatCountLimited = result['count'] + 20;
     },
 
     /* Метод, создающий новую групповую переписку */
@@ -146,9 +213,33 @@ msg = {
         });
     },
 
+    /* Метод, загружающий предыдущие сообщения */
+    async loadPrevMessages(form)
+    {
+        /* Заполняем данные формы */
+        form.typeRequest.value = 'loadPrev';
+        let formData = new FormData(form);
+        formData.append('toUserId', msg.touid);
+        formData.append('prevCount', msg.prevCount);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        msg.setPrevPM(result);
+    },
+
     /* Метод, обновляющий сообщения */
     async update(form, toUserId)
     {
+        /* Сохраняем идентификатор пользователя */
+        msg.touid = toUserId;
         /* Заполняем данные формы */
         form.typeRequest.value = 'update';
         form.lastId.value = msg.lastId.toString();
@@ -163,15 +254,28 @@ msg = {
         /* Получаем результат */
         let result = await response.json();
 
+        /* Запоминаем было уже обновление сообщений или нет */
+        let started = (msg.lastId == 0);
+
         /* Ставим новые сообщения */
         msg.setNewPM(result);
+
+        /* Если прибыли новые сообщения */
+        if(msg.delta > 0 || started)
+        {
+            /* Прокручиваем прокрутку */
+            let obj = document.getElementById('receiveDiv');
+            obj.scrollTo(0, obj.scrollHeight);
+        }
     },
 
     /* Метод, обновляющий статус переписок */
-    async updateAllPM(form)
+    async updateAllPM(form, isFull)
     {
         /* Заполняем данные формы */
         let formData = new FormData(form);
+        formData.append('isFull', (isFull?'1':'0'));
+        formData.append('count', msg.chatCount.toString());
 
         /* Выполняем POST-запрос */
         let response = await fetch('/messagesproc', {
@@ -187,3 +291,14 @@ msg = {
     }
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    msg.loadByScroll(document.forms['sendForm']);
+    msg.loadByScrollOfList(document.forms['sendForm']);
+    msg.updateAllPM(document.forms['allPMInfo'], true)
+    setInterval(
+        () => {
+            msg.updateAllPM(document.forms['allPMInfo'], false)
+        },
+        2000
+    );
+});

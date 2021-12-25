@@ -18,6 +18,15 @@ Formatted HTML:
             <li class="nav-item">
                <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
             </li>
+             {% if auth_validate %}
+			<li class="nav-item">
+               <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("messages") }}">Мессенджер</a>
+            </li>
+			{% else %}
+			<li class="nav-item">
+               <a class="nav-link fw-bolder disabled" aria-current="page" href="{{ url_for("messages") }}">Мессенджер</a>
+            </li>
+			{% endif %}
             <li class="nav-item">
                <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("auth") }}">Авторизация</a>
             </li>

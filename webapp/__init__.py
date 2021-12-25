@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for, redirect
 from flask_login import LoginManager
 from webapp.MODEL import db, User
 
@@ -19,11 +19,15 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
-
     # Инициализация объекта авторизации
     Login_manager = LoginManager()
     Login_manager.init_app(app)
     Login_manager.login_view = 'auth'
+
+    #Добавляем favicon
+    @app.route('/favicon.ico')
+    def favicon():
+        return redirect(url_for('static', filename='/img/favicon.ico'))
 
     @Login_manager.user_loader
     def load_user(id):
@@ -46,7 +50,7 @@ def create_app():
     def process_messages():
         return MessagesHandler(db)
 
-    
+
     # Служебная страница обработчик формы поиска пользователей по AJAX
     @app.route('/searchusersproc', methods=['POST'])
     def process_search():
