@@ -20,5 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
+        document.getElementById('button-smile').onclick = null;
     }
 });

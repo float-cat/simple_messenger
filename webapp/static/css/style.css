@@ -7,7 +7,7 @@
 
 #receiveDiv::-webkit-scrollbar-thumb, #messagesAllOutput::-webkit-scrollbar-thumb {
     background-color: #0d6efd;
-padding-left: 5px;
+    padding-left: 5px;
 }
 
 
@@ -44,7 +44,7 @@ padding-left: 5px;
     .perepis {
         display:none !important;
     }
- .main-send {
+    .main-send {
         display:none !important;
     }
 }
@@ -55,5 +55,5 @@ padding-left: 5px;
 }
 
 .accordion{
-margin-bottom: 20px;
+    margin-bottom: 20px;
 }
