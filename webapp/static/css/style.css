@@ -1,5 +1,5 @@
 #receiveDiv, #messagesAllOutput {
-    scrollbar-color: white #0d6efd;     /* «цвет ползунка» «цвет полосы скроллбара» */
+    scrollbar-color: #0d6efd white;     /* «цвет ползунка» «цвет полосы скроллбара» */
     scrollbar-width: thin;  /* толщина - auto,thin, none */
 }
 
