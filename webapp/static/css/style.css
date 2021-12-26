@@ -1,9 +1,9 @@
-#receiveDiv, #messagesAllOutput {
+﻿#receiveDiv, #messagesAllOutput {
     scrollbar-color: #0d6efd white;     /* «цвет ползунка» «цвет полосы скроллбара» */
     scrollbar-width: thin;  /* толщина - auto,thin, none */
 }
 
-html, body {
+html, body, #floatObject {
     scrollbar-width: none;  /* толщина */
 }
 
