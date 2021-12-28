@@ -30,6 +30,9 @@ html, body, #floatObject {
 }
 .vh-100{
     overflow: hidden;
+    position: fixed;
+    top: 30;
+    left: 0;
 }
 
 .scrollbar{
