@@ -40,6 +40,7 @@ msg = {
     async setPM(idx, login, message, time, isOwner, isNew)
     {
         output = document.getElementById('receiveDiv');
+
         /* Проверяем есть ли такая переписка */
         /* Если нет, то создаем новую */
         newDiv = document.createElement('div');
@@ -61,6 +62,7 @@ msg = {
                 col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
                 + '<p>' + message + '</p></div></div>';}
+
 
 
     },
@@ -215,29 +217,32 @@ msg = {
 
         let outputelem = document.getElementById('outputUserList');
         outputelem.innerHTML = '';
-
+        outputelem.innerHTML +='<ul class="list-group">'
         for(let idx = 0; idx < result['count']; idx++)
         {
             let newDiv = document.createElement('div');
             newDiv.id = 'user' + idx;
+
             if(result['isowner'] == '1')
             {
-                newDiv.innerHTML = ' <input type="button" \
+                newDiv.innerHTML = '<li class="list-group-item"> <input type="button" class="btn btn-outline-danger btn-sm" \
                     onclick="msg.dropFromGM('
                     + chatId + ', '
-                    + result['msgids'][idx] + ')" value="-"></input> ';
+                    + result['msgids'][idx] + ')" value="-"></input>' +  '&nbsp;&nbsp;' + result[result['msgids'][idx]]['login'] +'</li>';
             }
-            newDiv.innerHTML += result[result['msgids'][idx]]['login'];
+
+
             outputelem.append(newDiv);
         }
+        outputelem.innerHTML +='</ul>'
         if(result['isowner'] == '0')
         {
-            let newDiv = document.createElement('div');
-            newDiv.id = 'dropSelf';
-            newDiv.innerHTML = '<input type="button" \
+            let newDiv1 = document.createElement('div');
+            newDiv1.id = 'dropSelf';
+            newDiv1.innerHTML = '<input type="button" class="btn btn-outline-danger btn-sm" \
                 onclick="msg.dropFromGM('
-                + chatId + ', -1)" value="Удалиться"></input> ';
-            outputelem.append(newDiv);
+                + chatId + ', -1)" value="Покинуть беседу"></input> ';
+            outputelem.append(newDiv1);
         }
     },
 

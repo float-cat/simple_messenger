@@ -12,7 +12,7 @@ searchUsers = {
             + login + '</a>';        
         let url = (new URL(document.location)).searchParams;
         if (url.get('chatid'))
-            newLi.innerHTML = ' <input type="button" value="+" \
+            newLi.innerHTML = ' <input type="button" class="btn btn-outline-success" value="+" \
                 onclick="searchUsers.append(this.parentNode, '
                 + url.get('chatid') + ')"></input>' + '&nbsp;&nbsp;' + newLi.innerHTML;
     },
