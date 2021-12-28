@@ -16,7 +16,7 @@
          <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                <li class="nav-item">
-                  <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
+                  <a class="nav-link fw-bolder" href="{{ url_for("index") }}">На главную</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
@@ -45,15 +45,29 @@
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
-            <div class="test">
-             <form name="userlist">
-              <input type="button" value="Test" onclick="msg.getUserListOfGM(this.form)">
-              </input>
-              <div id="outputUserList">
-              </div>
-             </form>
+            <div class='border rounded  h-75 main-window'>
+               {% if toUserId %}			
+               <div class="row bg-white border-bottom toolbar">
+                  <div class="col">
+                  </div>
+                  <div class="col text-center" id="messenger-header">
+                  </div>
+                  <div class="col text-end">
+                     {% if toChatId %}
+                     <form name="userlist" id="userlist">
+                        <button type="button" value="Test" onclick="msg.getUserListOfGM(this.form)" class="btn btn-primary"  data-bs-html="true"  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content='<div id="outputUserList"></div>' data-bs-offset="0,20">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-app-indicator"  viewBox="0 0 16 16">
+                              <path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+                              <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                           </svg>
+                        </button>
+                     </form>
+                     {% endif %}
+                  </div>
+               </div>
+               {% endif %}
+               <div id="receiveDiv" class="h-100 scrollbar"></div>
             </div>
-            <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
             <br>
             {% if toUserId %}
             <form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
@@ -230,6 +244,7 @@
           2000
          );
       </script>
+      <script type="text/javascript" src="/static/js/dialog-header.js"></script>
       {% endif %}
       <script type="text/javascript" src="/static/js/IsMobile.js"></script>
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
