@@ -45,6 +45,14 @@
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
+            <div class="test">
+             <form name="userlist">
+              <input type="button" value="Test" onclick="msg.getUserListOfGM(this.form)">
+              </input>
+              <div id="outputUserList">
+              </div>
+             </form>
+            </div>
             <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
             <br>
             {% if toUserId %}
@@ -59,7 +67,7 @@
             </input>
             <div class="input-group mb-3 ">
                <button class="btn btn-primary main-send" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">Отправить</button>
-               <button class="btn btn-primary" id="button-smile" data-bs-offset="70,0" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+               <button class="btn btn-primary" id="button-smile" data-bs-offset="70,20" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
                   <a href="##" class="smile">😃</a>
                   <a href="##" class="smile">😁</a>
                   <a href="##" class="smile">😂</a>
@@ -111,7 +119,7 @@
                {% else %}
                <div class="input-group mb-3 ">
                   {{ form.submit() }}
-                  <button class="btn btn-primary" id="button-smile" data-bs-offset="70,0" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+                  <button class="btn btn-primary" id="button-smile" data-bs-offset="70,20" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
                      <a href="##" class="smile">😃</a>
                      <a href="##" class="smile">😁</a>
                      <a href="##" class="smile">😂</a>
@@ -163,7 +171,7 @@
                   <br>
                </div>
             </div>
-            <div id="outputPlace1" class="bg-white col-4 perepis">
+            <div id="outputPlace1" class="bg-white col-4 perepis h-100">
                <div id="floatObject" class="scrollbar h-75">
                   <br />
                   <div class="accordion accordion-flush border" id="accordionFlushExample">

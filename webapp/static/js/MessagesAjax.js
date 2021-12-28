@@ -191,6 +191,74 @@ msg = {
         document.location = '/messages?chatid=' + result['newgm']
     },
 
+
+    /* Метод, получающий список пользователей в переписке */
+    async getUserListOfGM(form)
+    {
+        let formData = new FormData(form);
+        formData.append('typeRequest', 'listusersofGM');
+        let url = (new URL(document.location)).searchParams;
+        let chatId = url.get('chatid');
+        if (chatId != null) 
+            formData.append('chatId', chatId);
+        else
+            return;
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        let outputelem = document.getElementById('outputUserList');
+        outputelem.innerHTML = '';
+
+        for(let idx = 0; idx < result['count']; idx++)
+        {
+            let newDiv = document.createElement('div');
+            newDiv.id = 'user' + idx;
+            if(result['isowner'] == '1')
+            {
+                newDiv.innerHTML = ' <input type="button" \
+                    onclick="msg.dropFromGM(this.form, '
+                    + chatId + ', '
+                    + result['msgids'][idx] + ')" value="-"></input> ';
+            }
+            newDiv.innerHTML += result[result['msgids'][idx]]['login'];
+            outputelem.append(newDiv);
+        }
+        if(result['isowner'] == '0')
+        {
+            let newDiv = document.createElement('div');
+            newDiv.id = 'dropSelf';
+            newDiv.innerHTML = '<input type="button" \
+                onclick="msg.dropFromGM(this.form, '
+                + chatId + ', -1)" value="Удалиться"></input> ';
+            outputelem.append(newDiv);
+        }
+    },
+
+    /* Метод, удаляющий пользователя из переписки */
+    async dropFromGM(form, chatId, userId)
+    {
+        let formData = new FormData(form);
+        formData.append('typeRequest', 'dropFromGM');
+        formData.append('chatId', chatId.toString());
+        formData.append('userId', userId.toString());
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+    },
+
     /* Метод, отправляющий сообщение */
     async send(form, toUserId)
     {

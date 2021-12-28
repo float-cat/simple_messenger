@@ -426,6 +426,8 @@ class Messages(object):
         return jsonString
 
     def appendToGroupChat(self, userId, chatId):
+        userId = html.escape(userId)
+        chatId = html.escape(chatId)
         # Проверяем является ли пользователь, который
         #  добавляет, создателем переписки
         result = self.session.execute(
@@ -456,6 +458,9 @@ class Messages(object):
         return '{"status": "ok"}'
 
     def createNewGroupMessages(self, caption):
+        caption = html.escape(caption)
+        if caption == "":
+            caprion = "Новая переписка"
         # Добавляем групповую переписку
         self.session.execute(
             f"""INSERT INTO Chats (ownerUserId, caption)
@@ -481,4 +486,96 @@ class Messages(object):
         self.session.commit()
         self.sendMessage('c' + str(chatId), 'Создал групповую переписку!')
         return '{"newgm": ' + str(chatId) + '}'
+
+    def getUsersInGroupMessages(self, chatId):
+        chatId = html.escape(chatId)
+        # Проверяем есть ли пользователь в переписке
+        result = self.session.execute(
+            f"""SELECT userId, login
+                FROM ChatUsers
+                JOIN Users
+                    ON userId = Users.id
+                WHERE chatId = {chatId}
+                    AND userId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        if not row:
+            resultDict = {}
+            resultDict['count'] = 0
+            resultDict['msgids'] = {}
+            jsonString = json.dumps(resultDict)
+            return jsonString
+        # Получаем список пользователей в переписке
+        result = self.session.execute(
+            f"""SELECT userId, login
+                FROM ChatUsers
+                JOIN Users
+                    ON userId = Users.id
+                WHERE chatId = {chatId}"""
+        )
+        # Объявляем словарь для формирования ответа
+        #  Структура ответа
+        #    {
+        #        "count": <count>,
+        #        "msgids":
+        #        {
+        #            "0": <id1>
+        #            ...
+        #        },
+        #        "id1":
+        #        {
+        #            "login": <login1>
+        #        },
+        #        ...
+        #        "isowner": <isownerstatus>
+        #    }
+        resultDict = {}
+        resultDict['count'] = 0
+        resultDict['msgids'] = {}
+        for row in result:
+            resultDict['msgids'][resultDict['count']] = int(row[0])
+            resultDict['count'] += 1
+            resultDict[row[0]] = {}
+            resultDict[row[0]]['login'] = row[1]
+        # Проверяем является ли пользователь владельцем переписки
+        result = self.session.execute(
+            f"""SELECT ownerUserId
+                FROM Chats
+                WHERE id = {chatId}
+                    AND ownerUserId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        if not row:
+            resultDict['isowner'] = 0
+        else:
+            resultDict['isowner'] = 1
+        jsonString = json.dumps(resultDict)
+        return jsonString
+
+    def dropFromGroupMessages(self, chatId, userId):
+        chatId = html.escape(chatId)
+        userId = html.escape(userId)
+        # Проверяем является ли пользователь владельцем переписки
+        result = self.session.execute(
+            f"""SELECT ownerUserId
+                FROM Chats
+                WHERE id = {chatId}
+                    AND ownerUserId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        # Если не владелец или удаляет не сам себя
+        if not row and userId != "-1":
+            # Возвращаем статус фейл
+            return '{"status": "fail"}'
+        # Иначе - удаляем члена переписки
+        dropUserId = userId
+        if dropUserId == "-1":
+            dropUserId = self.fromUserId
+        result = self.session.execute(
+            f"""DELETE FROM ChatUsers
+                WHERE chatId = {chatId}
+                    AND userId = {dropUserId}"""
+        )
+        self.session.commit()
+        return '{"status": "ok"}'
 
