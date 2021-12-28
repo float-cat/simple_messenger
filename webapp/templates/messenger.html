@@ -45,6 +45,14 @@
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
+            <div class="test">
+             <form name="userlist">
+              <input type="button" value="Test" onclick="msg.getUserListOfGM(this.form)">
+              </input>
+              <div id="outputUserList">
+              </div>
+             </form>
+            </div>
             <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
             <br>
             {% if toUserId %}
