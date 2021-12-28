@@ -223,7 +223,7 @@ msg = {
             if(result['isowner'] == '1')
             {
                 newDiv.innerHTML = ' <input type="button" \
-                    onclick="msg.dropFromGM(this.form, '
+                    onclick="msg.dropFromGM('
                     + chatId + ', '
                     + result['msgids'][idx] + ')" value="-"></input> ';
             }
@@ -235,16 +235,16 @@ msg = {
             let newDiv = document.createElement('div');
             newDiv.id = 'dropSelf';
             newDiv.innerHTML = '<input type="button" \
-                onclick="msg.dropFromGM(this.form, '
+                onclick="msg.dropFromGM('
                 + chatId + ', -1)" value="Удалиться"></input> ';
             outputelem.append(newDiv);
         }
     },
 
     /* Метод, удаляющий пользователя из переписки */
-    async dropFromGM(form, chatId, userId)
+    async dropFromGM(chatId, userId)
     {
-        let formData = new FormData(form);
+        let formData = new FormData();
         formData.append('typeRequest', 'dropFromGM');
         formData.append('chatId', chatId.toString());
         formData.append('userId', userId.toString());
