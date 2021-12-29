@@ -416,9 +416,7 @@ msg = {
         });
 
         /* Получаем результат в JSON */
-        let result = await response.text();
-
-        alert(result);
+        let result = await response.json();
     }
 };
 
