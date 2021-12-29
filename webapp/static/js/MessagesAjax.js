@@ -394,6 +394,31 @@ msg = {
         /* Ставим новые сообщения */
         let maintitle = document.getElementById('messenger-header');
         maintitle.innerHTML = '<b>' + result['title'] + '</b>';
+    },
+
+    /* Метод, блокирующий пользователя */
+    async blockThisUser()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'blockUser');
+        let url = (new URL(document.location)).searchParams;
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+        else
+            formData.append('userId', '-1');
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.text();
+
+        alert(result);
     }
 };
 
