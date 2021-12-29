@@ -225,10 +225,14 @@ msg = {
 
             if(result['isowner'] == '1')
             {
-                newDiv.innerHTML = '<li class="list-group-item"> <input type="button" class="btn btn-outline-danger btn-sm" \
+                newDiv.innerHTML = '<li class="list-group-item"> \
+                    <input type="button" \
+                    class="btn btn-outline-danger btn-sm" \
                     onclick="msg.dropFromGM('
                     + chatId + ', '
-                    + result['msgids'][idx] + ')" value="-"></input>' +  '&nbsp;&nbsp;' + result[result['msgids'][idx]]['login'] +'</li>';
+                    + result['msgids'][idx] + ')" value="-"></input>'
+                    +  '&nbsp;&nbsp;'
+                    + result[result['msgids'][idx]]['login'] +'</li>';
             }
 
 
@@ -239,7 +243,8 @@ msg = {
         {
             let newDiv1 = document.createElement('div');
             newDiv1.id = 'dropSelf';
-            newDiv1.innerHTML = '<input type="button" class="btn btn-outline-danger btn-sm" \
+            newDiv1.innerHTML = '<input type="button" \
+                class="btn btn-outline-danger btn-sm" \
                 onclick="msg.dropFromGM('
                 + chatId + ', -1)" value="Покинуть беседу"></input> ';
             outputelem.append(newDiv1);
@@ -361,13 +366,42 @@ msg = {
 
         /* Ставим новые сообщения */
         msg.setAllPM(result);
+    },
+
+    /* Метод, обновляющий имя переписки */
+    async updateTitleOfPM()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'updateTitle');
+        let url = (new URL(document.location)).searchParams;
+        let chatId = url.get('chatid');
+        if (chatId != null)
+            formData.append('chatId', chatId);
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        let maintitle = document.getElementById('messenger-header');
+        maintitle.innerHTML = '<b>' + result['title'] + '</b>';
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     msg.loadByScroll(document.forms['sendForm']);
     msg.loadByScrollOfList(document.forms['sendForm']);
-    msg.updateAllPM(document.forms['allPMInfo'], true)
+    msg.updateAllPM(document.forms['allPMInfo'], true);
+    msg.updateTitleOfPM();
     setInterval(
         () => {
             msg.updateAllPM(document.forms['allPMInfo'], false)

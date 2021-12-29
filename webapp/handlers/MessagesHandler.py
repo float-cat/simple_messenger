@@ -52,4 +52,12 @@ def MessagesHandler(db):
         userId = request.form.get('userId')
         newIdInfo = msg.dropFromGroupMessages(chatId, userId)
         return newIdInfo
+    elif typeRequest == 'updateTitle':
+        isPM = True
+        pmId = request.form.get('userId')
+        if not pmId:
+            isPM = False            
+            pmId = request.form.get('chatId')
+        newIdInfo = msg.updateTitleOfPM(pmId, isPM)
+        return newIdInfo
     return 'Request Fail!'

@@ -579,3 +579,23 @@ class Messages(object):
         self.session.commit()
         return '{"status": "ok"}'
 
+    def updateTitleOfPM(self, pmId, isPM):
+        pmId = html.escape(pmId)
+        if isPM:
+            result = self.session.execute(
+                f"""SELECT login
+                    FROM Users
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        elif self.isGranted(pmId):
+            result = self.session.execute(
+                f"""SELECT caption
+                    FROM Chats
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        return '{"title": "Нет переписки"}'
+
