@@ -307,7 +307,7 @@ msg = {
         /* Заполняем данные формы */
         form.typeRequest.value = 'send';
         /* Прячем сообщение, чтобы избежать паузы */
-        form.newMessageTmp.value = form.newMessage.value;
+        form.newMessageTmp.value = form.newMessage.value.replaceAll(":", "\\:");
         /* Сбрасываем поле сообщения */
         form.newMessage.value = '';
         let formData = new FormData(form);
