@@ -40,6 +40,7 @@ msg = {
     async setPM(idx, login, message, time, isOwner, isNew)
     {
         output = document.getElementById('receiveDiv');
+
         /* Проверяем есть ли такая переписка */
         /* Если нет, то создаем новую */
         newDiv = document.createElement('div');
@@ -61,6 +62,7 @@ msg = {
                 col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
                 + '<p>' + message + '</p></div></div>';}
+
 
 
     },
@@ -215,36 +217,44 @@ msg = {
 
         let outputelem = document.getElementById('outputUserList');
         outputelem.innerHTML = '';
-
+        outputelem.innerHTML +='<ul class="list-group">'
         for(let idx = 0; idx < result['count']; idx++)
         {
             let newDiv = document.createElement('div');
             newDiv.id = 'user' + idx;
+
             if(result['isowner'] == '1')
             {
-                newDiv.innerHTML = ' <input type="button" \
-                    onclick="msg.dropFromGM(this.form, '
+                newDiv.innerHTML = '<li class="list-group-item"> \
+                    <input type="button" \
+                    class="btn btn-outline-danger btn-sm" \
+                    onclick="msg.dropFromGM('
                     + chatId + ', '
-                    + result['msgids'][idx] + ')" value="-"></input> ';
+                    + result['msgids'][idx] + ')" value="-"></input>'
+                    +  '&nbsp;&nbsp;'
+                    + result[result['msgids'][idx]]['login'] +'</li>';
             }
-            newDiv.innerHTML += result[result['msgids'][idx]]['login'];
+
+
             outputelem.append(newDiv);
         }
+        outputelem.innerHTML +='</ul>'
         if(result['isowner'] == '0')
         {
-            let newDiv = document.createElement('div');
-            newDiv.id = 'dropSelf';
-            newDiv.innerHTML = '<input type="button" \
-                onclick="msg.dropFromGM(this.form, '
-                + chatId + ', -1)" value="Удалиться"></input> ';
-            outputelem.append(newDiv);
+            let newDiv1 = document.createElement('div');
+            newDiv1.id = 'dropSelf';
+            newDiv1.innerHTML = '<input type="button" \
+                class="btn btn-outline-danger btn-sm" \
+                onclick="msg.dropFromGM('
+                + chatId + ', -1)" value="Покинуть беседу"></input> ';
+            outputelem.append(newDiv1);
         }
     },
 
     /* Метод, удаляющий пользователя из переписки */
-    async dropFromGM(form, chatId, userId)
+    async dropFromGM(chatId, userId)
     {
-        let formData = new FormData(form);
+        let formData = new FormData();
         formData.append('typeRequest', 'dropFromGM');
         formData.append('chatId', chatId.toString());
         formData.append('userId', userId.toString());
@@ -356,13 +366,65 @@ msg = {
 
         /* Ставим новые сообщения */
         msg.setAllPM(result);
+    },
+
+    /* Метод, обновляющий имя переписки */
+    async updateTitleOfPM()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'updateTitle');
+        let url = (new URL(document.location)).searchParams;
+        let chatId = url.get('chatid');
+        if (chatId != null)
+            formData.append('chatId', chatId);
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        let maintitle = document.getElementById('messenger-header');
+        maintitle.innerHTML = '<b>' + result['title'] + '</b>';
+    },
+
+    /* Метод, блокирующий пользователя */
+    async blockThisUser()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'blockUser');
+        let url = (new URL(document.location)).searchParams;
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+        else
+            formData.append('userId', '-1');
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     msg.loadByScroll(document.forms['sendForm']);
     msg.loadByScrollOfList(document.forms['sendForm']);
-    msg.updateAllPM(document.forms['allPMInfo'], true)
+    msg.updateAllPM(document.forms['allPMInfo'], true);
+    msg.updateTitleOfPM();
     setInterval(
         () => {
             msg.updateAllPM(document.forms['allPMInfo'], false)

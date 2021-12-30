@@ -38,6 +38,30 @@ class Messages(object):
             return True
         return False
 
+    def isUserGranted(self, userId):
+        result = self.session.execute(
+            f"""SELECT blockUserId
+                FROM BlockUsers
+                WHERE blockUserId = {self.fromUserId}
+                    AND userId = {userId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return False
+        return True
+
+    def isBlocked(self, userId):
+        result = self.session.execute(
+            f"""SELECT blockUserId
+                FROM BlockUsers
+                WHERE userId = {self.fromUserId}
+                    AND blockUserId = {userId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return True
+        return False
+
     def formatTime(self, timeString):
         rows = timeString.split('.')
         timeOfMessage = datetime.datetime.strptime(
@@ -65,12 +89,13 @@ class Messages(object):
                       {int(self.toUserId)}, '{self.message}', '{today}')"""
             )
         else:
-            self.session.execute(
-                f"""INSERT INTO Messages
-                      (fromUserId, toUserId, message, sendDate)
-                    VALUES ({self.fromUserId},
-                      {self.toUserId}, '{self.message}', '{today}')"""
-            )
+            if self.isUserGranted(toUserId):
+                self.session.execute(
+                    f"""INSERT INTO Messages
+                          (fromUserId, toUserId, message, sendDate)
+                        VALUES ({self.fromUserId},
+                          {self.toUserId}, '{self.message}', '{today}')"""
+                )
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
@@ -577,5 +602,45 @@ class Messages(object):
                     AND userId = {dropUserId}"""
         )
         self.session.commit()
+        return '{"status": "ok"}'
+
+    def updateTitleOfPM(self, pmId, isPM):
+        pmId = html.escape(pmId)
+        if isPM:
+            result = self.session.execute(
+                f"""SELECT login
+                    FROM Users
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        elif self.isGranted(pmId):
+            result = self.session.execute(
+                f"""SELECT caption
+                    FROM Chats
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        return '{"title": "Нет переписки"}'
+
+    def blockUser(self, userId):
+        if not self.isBlocked(userId):
+            result = self.session.execute(
+                f"""INSERT INTO BlockUsers
+                        (userId, blockUserId)
+                    VALUES
+                        ('{self.fromUserId}', '{userId}')"""
+            )
+            self.session.commit()
+            return '{"status": "blocked"}'
+        else:
+            result = self.session.execute(
+                f"""DELETE FROM BlockUsers
+                    WHERE userid = '{self.fromUserId}'
+                        AND blockUserId = '{userId}'"""
+            )
+            self.session.commit()
+            return '{"status": "unblocked"}'
         return '{"status": "ok"}'
 
