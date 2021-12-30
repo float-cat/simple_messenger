@@ -42,8 +42,12 @@
    </nav>
    {% endblock %}
    {% block content %}
+
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
+
+         <a href="##" onclick="infbar('Алё малё')">Нажми меня</a>
+
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
             <div class='border rounded  h-75 main-window'>
                {% if toUserId %}			
@@ -232,6 +236,7 @@
             </div>
          </div>
       </div>
+
       <script type="text/javascript" src="/static/js/MessagesAjax.js"></script>
       <form name="allPMInfo">
          <input name="typeRequest" style="display: none;"
@@ -257,5 +262,31 @@
    </div>
 </div>
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
+
+
+
+
+
+
 <script type="text/javascript" src="/static/js/tooltipsSmile.js"></script>
+<div class="infbar" id="infbar" style="display:none;"></div>
+
+<script>
+    let infdiv = document.getElementById("infbar");
+         function infbar(inftext){
+         if(infdiv.style.display === 'none'){
+         let timer = setTimeout( () => {infdiv.style.display = 'none'}, 2000);
+         infdiv.style.display = 'block';
+         infdiv.innerHTML = inftext;
+         }
+
+         else{
+         infdiv.innerHTML = inftext;
+         }
+
+         }
+</script>
+
+
+
 {% endblock %}
