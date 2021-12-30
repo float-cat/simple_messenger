@@ -1,4 +1,15 @@
-﻿.toolbar {
+﻿.elipsis{
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+    }
+
+.textarea{
+	resize: none;
+        overflow-y: auto ;
+}
+
+.toolbar {
 	padding: 5.0px;
 }
 
@@ -40,6 +51,9 @@ body,
 .paddingmessage{
     padding-top: 7.5px !important;
     padding-bottom: 2.5px !important;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
 }
 .main-window{
     background: url('/static/img/background.png');
@@ -65,7 +79,7 @@ body,
     padding: 25px;
 }
 
-.smile {
+.smile, .decoration {
     text-decoration: none !important;
 }
 

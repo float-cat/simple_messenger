@@ -50,7 +50,7 @@
                <div class="row bg-primary toolbar align-items-center">
                   <div class="col">
                   </div>
-                  <div class="col text-center text-white" id="messenger-header">
+                  <div class="col text-center text-white elipsis" id="messenger-header">
                   </div>
                   <div class="col text-end">
                      {% if toChatId %}
@@ -62,7 +62,7 @@
                         </button>
                      </form>
                      {% else %}
-                     <a href="#" onclick="msg.blockThisUser()">❎</a>
+                     <a href="#" class="text-white decoration" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Заблокировать пользователя" onclick="msg.blockThisUser()">❎</a>
                      {% endif %}
                   </div>
                </div>
