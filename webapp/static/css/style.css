@@ -1,4 +1,8 @@
-﻿
+﻿.elipsis{
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+    }
 
 .textarea{
 	resize: none;
