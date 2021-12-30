@@ -1,4 +1,25 @@
-﻿.elipsis{
+﻿  .infbar {
+         position:fixed;
+         background:black;
+         opacity: .7;
+         padding-top: 5px;
+         padding-bottom: 5px;
+         padding-left: 15px;
+         padding-right: 15px;
+         width: 500px;
+         max-width: 80%;
+         border-radius: 5.5px;
+         color:white;
+         text-align:center;
+         top: 50%;
+         left: 50%;
+         -webkit-transform: translate(-50%, -50%);
+         transform: translate(-50%, -50%);
+         width: 30em;
+         z-index: 3001;}
+
+
+.elipsis{
      white-space: nowrap;
      overflow: hidden;
      text-overflow: ellipsis;
