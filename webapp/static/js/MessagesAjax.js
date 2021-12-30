@@ -7,6 +7,27 @@ msg = {
     chatCount: 10,
     chatCountLimited: 20,
 
+    async infbar(inftext, color = null)
+    {
+        infdiv = document.getElementById("infbar");
+        if(infdiv.style.display === 'none'){
+            setTimeout(
+                () => {infdiv.style.display = 'none'},
+                2000
+            );
+            infdiv.style.display = 'block';
+            if (color != null)        
+                infdiv.style.background = color;
+            else
+                infdiv.style.background = 'black';
+            infdiv.innerHTML = inftext;
+        }
+        else
+        {
+            infdiv.innerHTML = inftext;
+        }
+    },
+
     async loadByScroll(form)
     {
         let elem = document.getElementById('receiveDiv');
@@ -195,9 +216,9 @@ msg = {
 
 
     /* Метод, получающий список пользователей в переписке */
-    async getUserListOfGM(form)
+    async getUserListOfGM()
     {
-        let formData = new FormData(form);
+        let formData = new FormData();
         formData.append('typeRequest', 'listusersofGM');
         let url = (new URL(document.location)).searchParams;
         let chatId = url.get('chatid');
@@ -267,6 +288,13 @@ msg = {
 
         /* Получаем результат */
         let result = await response.json();
+
+        /* Обрабатываем ответ */
+        if(result['status'] == 'ok')
+        {
+            msg.infbar('Пользователь удален из групповой переписки', 'red');
+            msg.getUserListOfGM();
+        }
     },
 
     /* Метод, отправляющий сообщение */
@@ -417,6 +445,12 @@ msg = {
 
         /* Получаем результат в JSON */
         let result = await response.json();
+
+        /* Обрабатываем ответ */
+        if(result['status'] == 'blocked')
+            msg.infbar('Пользователь заблокирован', 'red');
+        else if(result['status'] == 'unblocked')
+            msg.infbar('Пользователь разблокирован', 'green');
     }
 };
 

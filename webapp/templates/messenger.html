@@ -46,8 +46,6 @@
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
 
-         <a href="##" onclick="infbar('Алё малё')">Нажми меня</a>
-
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
             <div class='border rounded  h-75 main-window'>
                {% if toUserId %}			
@@ -59,7 +57,7 @@
                   <div class="col text-end">
                      {% if toChatId %}
                      <form name="userlist" id="userlist">
-                        <button type="button" value="UserList" onclick="msg.getUserListOfGM(this.form)" class="btn btn-primary"  data-bs-html="true"  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content='<ul class="list-group"><div id="outputUserList"></div></ul>' data-bs-offset="0,20">
+                        <button type="button" value="UserList" onclick="msg.getUserListOfGM()" class="btn btn-primary"  data-bs-html="true"  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content='<ul class="list-group"><div id="outputUserList"></div></ul>' data-bs-offset="0,20">
                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
                            <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
                            </svg>
@@ -262,31 +260,7 @@
    </div>
 </div>
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
-
-
-
-
-
-
 <script type="text/javascript" src="/static/js/tooltipsSmile.js"></script>
 <div class="infbar" id="infbar" style="display:none;"></div>
-
-<script>
-    let infdiv = document.getElementById("infbar");
-         function infbar(inftext){
-         if(infdiv.style.display === 'none'){
-         let timer = setTimeout( () => {infdiv.style.display = 'none'}, 2000);
-         infdiv.style.display = 'block';
-         infdiv.innerHTML = inftext;
-         }
-
-         else{
-         infdiv.innerHTML = inftext;
-         }
-
-         }
-</script>
-
-
 
 {% endblock %}
