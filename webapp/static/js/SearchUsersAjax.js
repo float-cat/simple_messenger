@@ -67,6 +67,13 @@ searchUsers = {
 
         /* Получаем результат в JSON */
         let result = await response.json();
+
+        /* Обрабатываем ответ */
+        if(result['status'] == 'ok')
+        {
+            msg.infbar('Пользователь добавлен в групповую переписку', 'green');
+            msg.getUserListOfGM();
+        }
     }
 };
 
