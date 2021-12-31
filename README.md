@@ -1,5 +1,7 @@
 # Простой мессенджер Simple Messenger
 
+![Обложка](https://sun9-25.userapi.com/impg/vlRX3BYOcFKkk0TRLvmZpheF6ZN-F2h9QWqJzg/0vW1wwUDMso.jpg?size=1280x720&quality=96&sign=77b236c087550224a5bfad3025c04e1a&type=album)
+
 ## Цель
 Написать простой мессенджер, позволяющий отправлять друг другу сообщения в режиме реального времени
 
@@ -14,11 +16,13 @@
   * Создание групповой переписки
   * Добавление пользователей в групповую переписку
 * Сделать простой поиск по всем пользователям
+* Разработать загрузку сообщений и переписок через AJAX по событию прокрутки элементов страницы
+* Сделать блокировку пользователей
 * Связать дизайн сайта с его логикой через шаблонизатор
 
 ## Скриншоты
-![Переписка](https://sun9-67.userapi.com/impg/20yPKqatnGXpa2EB4gSFA5GkcFkdH6XTF4KY0A/MSqqZZybmSI.jpg?size=1366x768&quality=96&sign=bb1104449d265770ad3c2dcd9b225729&type=album)
-![Переписка](https://sun9-15.userapi.com/impg/CiwzSiN7gGdKdfUPsBoIgMxb312FOom2aHwwzw/ZpAtcYSAgMw.jpg?size=1366x768&quality=96&sign=6c5aae966f5e9188557af25b21a922a2&type=album)
+![Переписка](https://sun9-83.userapi.com/impg/zXsn8uIlxZhBlybrpykuLu0ZTLywfIkTiccrOA/R6Lcz9CIi3I.jpg?size=1280x720&quality=96&sign=517425bad1e9955462e192ffd6f5a60b&type=album)
+![Переписка](https://sun9-80.userapi.com/impg/5yBhBhnvT57vIX32Snc7Gdba0G8nHRpRBapepQ/xUmJuvvdUkI.jpg?size=1280x720&quality=96&sign=da78ce229ddbc3d8b7d3e850eb30d46e&type=album)
 
 ## Cтруктура проекта
 ```markdown
@@ -27,10 +31,9 @@
 ├── create_db.py
 ├── dbscript
 │   └── createdb.sql
+├── .gitignore
 ├── README.md
 ├── requirements.txt
-├── simple_messenger_database.db
-├── test.txt
 └── webapp
     ├── classes
     │   ├── Messages.py
@@ -49,18 +52,19 @@
     │   ├── IndexPage.py
     │   ├── LogoutPage.py
     │   ├── MessagesPage.py
-    │   ├── NewGroupMessagesPage.py
     │   └── RegisterPage.py
     ├── README.md
     ├── static
-    │   ├── addsmile.js
     │   ├── css
     │   │   └── style.css
     │   ├── img
-    │   │   └── background.png
-    │   ├── IsMobile.js
-    │   ├── MessagesAjax.js
-    │   └── SearchUsersAjax.js
+    │   │   ├── background.png
+    │   │   └── favicon.ico
+    │   └── js
+    │       ├── IsMobile.js
+    │       ├── MessagesAjax.js
+    │       ├── SearchUsersAjax.js
+    │       └── tooltipsSmile.js
     └── templates
         ├── auth.html
         ├── base.html
@@ -69,5 +73,3 @@
         └── reg_user.html
 ```
 
-## Прочее
-В разработке, текущая актуальная ветка - stage
