@@ -41,4 +41,29 @@ def MessagesHandler(db):
         caption = request.form.get('caption')
         newIdInfo = msg.createNewGroupMessages(caption)
         return newIdInfo
+    # Список пользователей в групповой переписке
+    elif typeRequest == 'listusersofGM':
+        chatId = request.form.get('chatId')
+        newIdInfo = msg.getUsersInGroupMessages(chatId)
+        return newIdInfo
+    # Удаление пользователя из групповой переписки
+    elif typeRequest == 'dropFromGM':
+        chatId = request.form.get('chatId')
+        userId = request.form.get('userId')
+        newIdInfo = msg.dropFromGroupMessages(chatId, userId)
+        return newIdInfo
+    # Обновление заголовка переписки
+    elif typeRequest == 'updateTitle':
+        isPM = True
+        pmId = request.form.get('userId')
+        if not pmId:
+            isPM = False            
+            pmId = request.form.get('chatId')
+        titleInfo = msg.updateTitleOfPM(pmId, isPM)
+        return titleInfo
+    # Блокировка пользователя
+    elif typeRequest == 'blockUser':
+        userId = request.form.get('userId')
+        blockInfo = msg.blockUser(userId)
+        return blockInfo
     return 'Request Fail!'

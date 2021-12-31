@@ -16,6 +16,7 @@ def MessagesPage():
             page_title=title,
             form=messages_forms,
             user_name=current_user.login,
+            toChatId = toChatId,
             toUserId=toUserId)
     else:
         flash('Авторизуйтесь пожалуйста')

@@ -7,6 +7,27 @@ msg = {
     chatCount: 10,
     chatCountLimited: 20,
 
+    async infbar(inftext, color = null)
+    {
+        infdiv = document.getElementById("infbar");
+        if(infdiv.style.display === 'none'){
+            setTimeout(
+                () => {infdiv.style.display = 'none'},
+                2000
+            );
+            infdiv.style.display = 'block';
+            if (color != null)        
+                infdiv.style.background = color;
+            else
+                infdiv.style.background = 'black';
+            infdiv.innerHTML = inftext;
+        }
+        else
+        {
+            infdiv.innerHTML = inftext;
+        }
+    },
+
     async loadByScroll(form)
     {
         let elem = document.getElementById('receiveDiv');
@@ -40,6 +61,7 @@ msg = {
     async setPM(idx, login, message, time, isOwner, isNew)
     {
         output = document.getElementById('receiveDiv');
+
         /* Проверяем есть ли такая переписка */
         /* Если нет, то создаем новую */
         newDiv = document.createElement('div');
@@ -61,6 +83,7 @@ msg = {
                 col-lg-6 col alert alert-secondary paddingmessage"\
                 role="alert"><b>' + login + '&nbsp;</b> ' + time
                 + '<p>' + message + '</p></div></div>';}
+
 
 
     },
@@ -117,7 +140,7 @@ msg = {
             align-items-center justify-content-between"><strong class="mb-1">'
             + login + '</strong><small>' + time
             + '</small></div><div class="col-10 mb-1 small">'
-            + message + '</div>';
+            + message.substr(0,74) + '</div>';
     },
 
     async setNewPM(result)
@@ -191,6 +214,89 @@ msg = {
         document.location = '/messages?chatid=' + result['newgm']
     },
 
+
+    /* Метод, получающий список пользователей в переписке */
+    async getUserListOfGM()
+    {
+        let formData = new FormData();
+        formData.append('typeRequest', 'listusersofGM');
+        let url = (new URL(document.location)).searchParams;
+        let chatId = url.get('chatid');
+        if (chatId != null) 
+            formData.append('chatId', chatId);
+        else
+            return;
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        let outputelem = document.getElementById('outputUserList');
+        outputelem.innerHTML = '';
+        outputelem.innerHTML +='<ul class="list-group">'
+        for(let idx = 0; idx < result['count']; idx++)
+        {
+            let newDiv = document.createElement('div');
+            newDiv.id = 'user' + idx;
+
+            if(result['isowner'] == '1')
+            {
+                newDiv.innerHTML = '<li class="list-group-item"> \
+                    <input type="button" \
+                    class="btn btn-outline-danger btn-sm" \
+                    onclick="msg.dropFromGM('
+                    + chatId + ', '
+                    + result['msgids'][idx] + ')" value="-"></input>'
+                    +  '&nbsp;&nbsp;'
+                    + result[result['msgids'][idx]]['login'] +'</li>';
+            }
+
+
+            outputelem.append(newDiv);
+        }
+        outputelem.innerHTML +='</ul>'
+        if(result['isowner'] == '0')
+        {
+            let newDiv1 = document.createElement('div');
+            newDiv1.id = 'dropSelf';
+            newDiv1.innerHTML = '<input type="button" \
+                class="btn btn-outline-danger btn-sm" \
+                onclick="msg.dropFromGM('
+                + chatId + ', -1)" value="Покинуть беседу"></input> ';
+            outputelem.append(newDiv1);
+        }
+    },
+
+    /* Метод, удаляющий пользователя из переписки */
+    async dropFromGM(chatId, userId)
+    {
+        let formData = new FormData();
+        formData.append('typeRequest', 'dropFromGM');
+        formData.append('chatId', chatId.toString());
+        formData.append('userId', userId.toString());
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат */
+        let result = await response.json();
+
+        /* Обрабатываем ответ */
+        if(result['status'] == 'ok')
+        {
+            msg.infbar('Пользователь удален из групповой переписки', 'red');
+            msg.getUserListOfGM();
+        }
+    },
+
     /* Метод, отправляющий сообщение */
     async send(form, toUserId)
     {
@@ -201,7 +307,7 @@ msg = {
         /* Заполняем данные формы */
         form.typeRequest.value = 'send';
         /* Прячем сообщение, чтобы избежать паузы */
-        form.newMessageTmp.value = form.newMessage.value;
+        form.newMessageTmp.value = form.newMessage.value.replaceAll(":", "\\:");
         /* Сбрасываем поле сообщения */
         form.newMessage.value = '';
         let formData = new FormData(form);
@@ -288,13 +394,71 @@ msg = {
 
         /* Ставим новые сообщения */
         msg.setAllPM(result);
+    },
+
+    /* Метод, обновляющий имя переписки */
+    async updateTitleOfPM()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'updateTitle');
+        let url = (new URL(document.location)).searchParams;
+        let chatId = url.get('chatid');
+        if (chatId != null)
+            formData.append('chatId', chatId);
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
+
+        /* Ставим новые сообщения */
+        let maintitle = document.getElementById('messenger-header');
+        maintitle.innerHTML = '<b>' + result['title'] + '</b>';
+    },
+
+    /* Метод, блокирующий пользователя */
+    async blockThisUser()
+    {
+        /* Заполняем данные формы */
+        let formData = new FormData();
+        formData.append('typeRequest', 'blockUser');
+        let url = (new URL(document.location)).searchParams;
+        let userId = url.get('userid');
+        if (userId != null)
+            formData.append('userId', userId);
+        else
+            formData.append('userId', '-1');
+
+        /* Выполняем POST-запрос */
+        let response = await fetch('/messagesproc', {
+            method: 'POST',
+            body: formData
+        });
+
+        /* Получаем результат в JSON */
+        let result = await response.json();
+
+        /* Обрабатываем ответ */
+        if(result['status'] == 'blocked')
+            msg.infbar('Пользователь заблокирован', 'red');
+        else if(result['status'] == 'unblocked')
+            msg.infbar('Пользователь разблокирован', 'green');
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     msg.loadByScroll(document.forms['sendForm']);
     msg.loadByScrollOfList(document.forms['sendForm']);
-    msg.updateAllPM(document.forms['allPMInfo'], true)
+    msg.updateAllPM(document.forms['allPMInfo'], true);
+    msg.updateTitleOfPM();
     setInterval(
         () => {
             msg.updateAllPM(document.forms['allPMInfo'], false)

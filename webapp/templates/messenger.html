@@ -16,20 +16,10 @@
          <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                <li class="nav-item">
-                  <a class="nav-link fw-bolder" aria-current="page" href="{{ url_for("index") }}">На главную</a>
+                  <a class="nav-link fw-bolder" href="{{ url_for("index") }}">На главную</a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
-               </li>
-               <li class="nav-item dropdown">
-                  <a class="nav-link fw-bolder dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Выпадающий список
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                     <li><a class="dropdown-item" href="#">Опция 1</a></li>
-                     <li><a class="dropdown-item" href="#">Опция 2</a></li>
-                     <li><a class="dropdown-item" href="#">Опция 3</a></li>
-                  </ul>
+                  <a class="nav-link disabled fw-bolder" href="#" tabindex="-1" aria-disabled="true">Настройки</a>
                </li>
             </ul>
             <span class="navbar-text">
@@ -42,10 +32,35 @@
    </nav>
    {% endblock %}
    {% block content %}
+
    <div class="container-fluid main_bg auth h-100">
       <div class="row h-100">
+
          <div class="col-sm-12 col-md-8 col-lg-8 bg-light h-100">
-            <div class='border rounded scrollbar h-75 main-window'  id="receiveDiv"> </div>
+            <div class='border rounded  h-75 main-window'>
+               {% if toUserId %}			
+               <div class="row bg-primary toolbar align-items-center">
+                  <div class="col">
+                  </div>
+                  <div class="col text-center text-white elipsis" id="messenger-header">
+                  </div>
+                  <div class="col text-end">
+                     {% if toChatId %}
+                     <form name="userlist" id="userlist">
+                        <button type="button" value="UserList" onclick="msg.getUserListOfGM()" class="btn btn-primary"  data-bs-html="true"  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content='<ul class="list-group"><div id="outputUserList"></div></ul>' data-bs-offset="0,20">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
+                           <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+                           </svg>
+                        </button>
+                     </form>
+                     {% else %}
+                     <a href="#" class="text-white decoration" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Заблокировать пользователя" onclick="msg.blockThisUser()">❎</a>
+                     {% endif %}
+                  </div>
+               </div>
+               {% endif %}
+               <div id="receiveDiv" class="h-100 scrollbar"></div>
+            </div>
             <br>
             {% if toUserId %}
             <form name="sendForm" method="POST" action="{{ url_for("process_messages") }}">
@@ -59,7 +74,7 @@
             </input>
             <div class="input-group mb-3 ">
                <button class="btn btn-primary main-send" type="button" onclick="msg.send(this.form, '{{ toUserId }}')">Отправить</button>
-               <button class="btn btn-primary" id="button-smile" data-bs-offset="70,0" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+               <button class="btn btn-primary" id="button-smile" data-bs-offset="70,20" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
                   <a href="##" class="smile">😃</a>
                   <a href="##" class="smile">😁</a>
                   <a href="##" class="smile">😂</a>
@@ -111,7 +126,7 @@
                {% else %}
                <div class="input-group mb-3 ">
                   {{ form.submit() }}
-                  <button class="btn btn-primary" id="button-smile" data-bs-offset="70,0" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
+                  <button class="btn btn-primary" id="button-smile" data-bs-offset="70,20" type="button"  data-bs-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content='<a href="##" class="smile">🚀</a>
                      <a href="##" class="smile">😃</a>
                      <a href="##" class="smile">😁</a>
                      <a href="##" class="smile">😂</a>
@@ -163,7 +178,7 @@
                   <br>
                </div>
             </div>
-            <div id="outputPlace1" class="bg-white col-4 perepis">
+            <div id="outputPlace1" class="bg-white col-4 perepis h-100">
                <div id="floatObject" class="scrollbar h-75">
                   <br />
                   <div class="accordion accordion-flush border" id="accordionFlushExample">
@@ -209,6 +224,7 @@
             </div>
          </div>
       </div>
+
       <script type="text/javascript" src="/static/js/MessagesAjax.js"></script>
       <form name="allPMInfo">
          <input name="typeRequest" style="display: none;"
@@ -235,4 +251,6 @@
 </div>
 <script type="text/javascript" src="/static/js/SearchUsersAjax.js"></script>
 <script type="text/javascript" src="/static/js/tooltipsSmile.js"></script>
+<div class="infbar" id="infbar" style="display:none;"></div>
+
 {% endblock %}

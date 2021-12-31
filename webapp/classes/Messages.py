@@ -38,6 +38,30 @@ class Messages(object):
             return True
         return False
 
+    def isUserGranted(self, userId):
+        result = self.session.execute(
+            f"""SELECT blockUserId
+                FROM BlockUsers
+                WHERE blockUserId = {self.fromUserId}
+                    AND userId = {userId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return False
+        return True
+
+    def isBlocked(self, userId):
+        result = self.session.execute(
+            f"""SELECT blockUserId
+                FROM BlockUsers
+                WHERE userId = {self.fromUserId}
+                    AND blockUserId = {userId}"""
+        )
+        row = result.fetchone()
+        if row:
+            return True
+        return False
+
     def formatTime(self, timeString):
         rows = timeString.split('.')
         timeOfMessage = datetime.datetime.strptime(
@@ -65,12 +89,13 @@ class Messages(object):
                       {int(self.toUserId)}, '{self.message}', '{today}')"""
             )
         else:
-            self.session.execute(
-                f"""INSERT INTO Messages
-                      (fromUserId, toUserId, message, sendDate)
-                    VALUES ({self.fromUserId},
-                      {self.toUserId}, '{self.message}', '{today}')"""
-            )
+            if self.isUserGranted(toUserId):
+                self.session.execute(
+                    f"""INSERT INTO Messages
+                          (fromUserId, toUserId, message, sendDate)
+                        VALUES ({self.fromUserId},
+                          {self.toUserId}, '{self.message}', '{today}')"""
+                )
         self.session.commit()
 
     def getMessagesDelta(self, lastId, userId):
@@ -426,6 +451,8 @@ class Messages(object):
         return jsonString
 
     def appendToGroupChat(self, userId, chatId):
+        userId = html.escape(userId)
+        chatId = html.escape(chatId)
         # Проверяем является ли пользователь, который
         #  добавляет, создателем переписки
         result = self.session.execute(
@@ -456,6 +483,9 @@ class Messages(object):
         return '{"status": "ok"}'
 
     def createNewGroupMessages(self, caption):
+        caption = html.escape(caption)
+        if caption == "":
+            caprion = "Новая переписка"
         # Добавляем групповую переписку
         self.session.execute(
             f"""INSERT INTO Chats (ownerUserId, caption)
@@ -481,4 +511,136 @@ class Messages(object):
         self.session.commit()
         self.sendMessage('c' + str(chatId), 'Создал групповую переписку!')
         return '{"newgm": ' + str(chatId) + '}'
+
+    def getUsersInGroupMessages(self, chatId):
+        chatId = html.escape(chatId)
+        # Проверяем есть ли пользователь в переписке
+        result = self.session.execute(
+            f"""SELECT userId, login
+                FROM ChatUsers
+                JOIN Users
+                    ON userId = Users.id
+                WHERE chatId = {chatId}
+                    AND userId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        if not row:
+            resultDict = {}
+            resultDict['count'] = 0
+            resultDict['msgids'] = {}
+            jsonString = json.dumps(resultDict)
+            return jsonString
+        # Получаем список пользователей в переписке
+        result = self.session.execute(
+            f"""SELECT userId, login
+                FROM ChatUsers
+                JOIN Users
+                    ON userId = Users.id
+                WHERE chatId = {chatId}"""
+        )
+        # Объявляем словарь для формирования ответа
+        #  Структура ответа
+        #    {
+        #        "count": <count>,
+        #        "msgids":
+        #        {
+        #            "0": <id1>
+        #            ...
+        #        },
+        #        "id1":
+        #        {
+        #            "login": <login1>
+        #        },
+        #        ...
+        #        "isowner": <isownerstatus>
+        #    }
+        resultDict = {}
+        resultDict['count'] = 0
+        resultDict['msgids'] = {}
+        for row in result:
+            resultDict['msgids'][resultDict['count']] = int(row[0])
+            resultDict['count'] += 1
+            resultDict[row[0]] = {}
+            resultDict[row[0]]['login'] = row[1]
+        # Проверяем является ли пользователь владельцем переписки
+        result = self.session.execute(
+            f"""SELECT ownerUserId
+                FROM Chats
+                WHERE id = {chatId}
+                    AND ownerUserId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        if not row:
+            resultDict['isowner'] = 0
+        else:
+            resultDict['isowner'] = 1
+        jsonString = json.dumps(resultDict)
+        return jsonString
+
+    def dropFromGroupMessages(self, chatId, userId):
+        chatId = html.escape(chatId)
+        userId = html.escape(userId)
+        # Проверяем является ли пользователь владельцем переписки
+        result = self.session.execute(
+            f"""SELECT ownerUserId
+                FROM Chats
+                WHERE id = {chatId}
+                    AND ownerUserId = {self.fromUserId}"""
+        )
+        row = result.fetchone()
+        # Если не владелец или удаляет не сам себя
+        if not row and userId != "-1":
+            # Возвращаем статус фейл
+            return '{"status": "fail"}'
+        # Иначе - удаляем члена переписки
+        dropUserId = userId
+        if dropUserId == "-1":
+            dropUserId = self.fromUserId
+        result = self.session.execute(
+            f"""DELETE FROM ChatUsers
+                WHERE chatId = {chatId}
+                    AND userId = {dropUserId}"""
+        )
+        self.session.commit()
+        return '{"status": "ok"}'
+
+    def updateTitleOfPM(self, pmId, isPM):
+        pmId = html.escape(pmId)
+        if isPM:
+            result = self.session.execute(
+                f"""SELECT login
+                    FROM Users
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        elif self.isGranted(pmId):
+            result = self.session.execute(
+                f"""SELECT caption
+                    FROM Chats
+                    WHERE id = {pmId}"""
+            )
+            row = result.fetchone()
+            return '{"title": "' + row[0] + '"}'
+        return '{"title": "Нет переписки"}'
+
+    def blockUser(self, userId):
+        if not self.isBlocked(userId):
+            result = self.session.execute(
+                f"""INSERT INTO BlockUsers
+                        (userId, blockUserId)
+                    VALUES
+                        ('{self.fromUserId}', '{userId}')"""
+            )
+            self.session.commit()
+            return '{"status": "blocked"}'
+        else:
+            result = self.session.execute(
+                f"""DELETE FROM BlockUsers
+                    WHERE userid = '{self.fromUserId}'
+                        AND blockUserId = '{userId}'"""
+            )
+            self.session.commit()
+            return '{"status": "unblocked"}'
+        return '{"status": "ok"}'
 
