@@ -1,5 +1,7 @@
 # Простой мессенджер Simple Messenger
 
+![Обложка](https://sun9-69.userapi.com/impg/vLkbkPNX260kYQn1t9x50i-h-0UcBirsRMboXw/S6x2Ndq_i7o.jpg?size=1280x720&quality=96&sign=5efa33dbea6c0f658ffe09dd3c2aa466&type=album)
+
 ## Цель
 Написать простой мессенджер, позволяющий отправлять друг другу сообщения в режиме реального времени
 
